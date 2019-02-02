@@ -12,6 +12,24 @@
       "console": "externalTerminal",
       "env": { "PYTHONPATH": "${workspaceRoot}/CollegiateHighGame" },
       "args": ["--address", "0.0.0.0", "--tcpport", "1234", "--udpport", "1234"]
+    },
+    {
+      "name": "Client 1",
+      "type": "python",
+      "request": "launch",
+      "module": "client",
+      "console": "externalTerminal",
+      "env": { "PYTHONPATH": "${workspaceRoot}/CollegiateHighGame" },
+      "args": [
+        "--address",
+        "0.0.0.0",
+        "--tcpport",
+        "1234",
+        "--udpport",
+        "1234",
+        "--udpaddr",
+        "1235"
+      ]
     }
   ]
 }
