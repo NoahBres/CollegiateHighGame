@@ -23,10 +23,13 @@ class Game:
     def run(self):
         self.connector.register()
 
+        while self.connector.id is None:
+            pass
+
         pygame.init()
 
         screen = pygame.display.set_mode((width, height))
-        pygame.display.set_caption("Collegiate Tech Club Game")
+        pygame.display.set_caption(f"Collegiate Tech Club Game - {self.connector.id}")
 
         self.running = True
 
