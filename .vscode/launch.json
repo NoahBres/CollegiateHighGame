@@ -22,7 +22,7 @@
       "env": { "PYTHONPATH": "${workspaceRoot}/CollegiateHighGame" },
       "args": [
         "--address",
-        "0.0.0.0",
+        "127.0.0.1",
         "--tcpport",
         "1234",
         "--udpport",
@@ -30,6 +30,12 @@
         "--udpaddr",
         "1235"
       ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Server/Client",
+      "configurations": ["Server", "Client 1"]
     }
   ]
 }
