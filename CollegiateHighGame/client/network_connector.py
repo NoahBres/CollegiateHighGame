@@ -58,7 +58,10 @@ class NetworkConnector:
         print(message_split)
 
         if message_split[0] == "set_id":
-            self.id = message_split[1]
+            payload = message_split[1].split("|")
+            self.id = payload[0]
+            self.parent.player.x = int(payload[1])
+            self.parent.player.y = int(payload[2])
         if message_split[0] == "client_list":
             self.parent.register_clients(message_split[1].split("|"))
 

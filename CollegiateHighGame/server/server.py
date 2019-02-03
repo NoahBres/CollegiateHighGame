@@ -67,7 +67,12 @@ class Server:
         if udp_addr not in self.clients:
             self.clients[udp_addr] = Client(sock, addr[0], addr[1], udp_addr)
 
-        sock.send(f"set_id,{self.clients[udp_addr].id}".encode())
+        new_client_x = 10 if len(self.clients) == 1 else 740
+        new_client_y = 275 if len(self.clients) == 1 else 275
+
+        sock.send(
+            f"set_id,{self.clients[udp_addr].id}|{new_client_x}|{new_client_y}".encode()
+        )
 
         if len(self.clients) > 1:
             client_addrs = f"{'|'.join([c.id for c in self.clients.values()])}"
