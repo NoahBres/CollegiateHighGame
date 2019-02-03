@@ -17,4 +17,4 @@ class NetworkPlayer(pygame.sprite.Sprite):
         pass
 
     def draw(self, screen):
-        screen.blit(self.surf, (self.x, self.y))
+        screen.blit(self.surf, (int(self.x), int(self.y)))
