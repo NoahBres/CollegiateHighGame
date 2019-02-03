@@ -1,6 +1,7 @@
 from sys import exit
 import pygame
 from pygame import locals
+import json
 
 from .network_connector import NetworkConnector
 from .player import Player
@@ -59,7 +60,7 @@ class Game:
 
     def poll_events(self):
         events = pygame.event.get()
-        # keys = pygame.key.get_pressed()
+        keys = pygame.key.get_pressed()
 
         # Check for quit
         for event in events:
@@ -71,8 +72,22 @@ class Game:
                     self.running = False
                     return
 
+        if keys[locals.K_w]:
+            self.player.move(0, -6)
+        if keys[locals.K_a]:
+            self.player.move(-6, 0)
+        if keys[locals.K_s]:
+            self.player.move(0, 6)
+        if keys[locals.K_d]:
+            self.player.move(6, 0)
+
     def update(self):
         self.player.update()
+
+        player_updates = self.player.get_network_updates()
+        if len(player_updates):
+            print(player_updates)
+            self.connector.send_udp(json.dumps(player_updates))
 
     def draw(self, screen):
         screen.fill(background)
@@ -91,5 +106,5 @@ class Game:
         for item in new_clients:
             new_player = NetworkPlayer(item[0])
             new_player.x = int(item[1])
-            new_player.y = item[2]
+            new_player.y = int(item[2])
             self.clients[item[0]] = new_player
