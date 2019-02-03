@@ -37,11 +37,11 @@ class TcpServer(Thread):
                 try:
                     self.lock.acquire()
 
-                    self.listener(data, conn)
+                    self.listener(data, conn, addr)
                 finally:
                     self.lock.release()
 
-                conn.close()
+                # conn.close()
             except socket.error as e:
                 print(e)
 
