@@ -24,6 +24,9 @@ class Player(pygame.sprite.Sprite):
         self.x += x
         self.y += y
 
-        # self.network_updates.appen
+        self.network_updates.append(["m", (x, y)])
 
-    # def get_network_updates(self):
+    def get_network_updates(self):
+        updates = self.network_updates
+        self.network_updates = []
+        return updates
