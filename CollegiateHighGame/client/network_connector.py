@@ -35,11 +35,13 @@ class NetworkConnector:
         self.send_tcp(f"reg,{self.udp_addr}")
 
     def send_udp(self, package):
-        if isinstance(package, str):
-            package = str.encode(package)
+        payload = f"{self.id},{package}"
+
+        if isinstance(payload, str):
+            payload = str.encode(payload)
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(package, self.server_udp)
+        sock.sendto(payload, self.server_udp)
 
     def send_tcp(self, package):
         if isinstance(package, str):
