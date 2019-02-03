@@ -1,4 +1,5 @@
 from threading import Lock
+import json
 
 from CollegiateHighGame.network_handler.tcp_handler import TcpServer
 from CollegiateHighGame.network_handler.udp_handler import UdpHandler
@@ -60,7 +61,7 @@ class Server:
     def broadcast(self, action, message):
         print("broadcast")
         for client in self.clients.values():
-            client.sock.send(f"{action},{message}".encode())
+            client.sock.send(f"{action};{message}".encode())
 
     def register_user(self, sock, udp_addr, addr):
         print("register new user")
@@ -76,12 +77,15 @@ class Server:
 
         new_client.props["x"] = new_client_x
         new_client.props["y"] = new_client_y
+        print()
 
-        sock.send(
-            f"set_id,{self.clients[udp_addr].id}|{new_client_x}|{new_client_y}".encode()
-        )
+        payload = json.dumps((self.clients[udp_addr].id, new_client_x, new_client_y))
+        sock.send(f"set_id;{payload}".encode())
 
         if len(self.clients) > 1:
-            client_addrs = f"{'|'.join([';'.join([c.id, str(c.props['x']), str(c.props['y'])]) for c in self.clients.values()])}"
+            client_addrs = [
+                (c.id, c.props["x"], c.props["y"]) for c in self.clients.values()
+            ]
+            client_addrs = json.dumps(client_addrs)
 
             self.broadcast("client_list", client_addrs)

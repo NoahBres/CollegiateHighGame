@@ -100,7 +100,8 @@ class Game:
         pygame.display.flip()
 
     def register_clients(self, client_list):
-        client_props = [x.split(";") for x in client_list]
+        print(client_list)
+        client_props = json.loads(client_list)
         new_clients = list(filter(lambda x: x[0] != self.connector.id, client_props))
 
         for item in new_clients:

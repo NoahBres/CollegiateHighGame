@@ -1,6 +1,8 @@
 import threading
 import socket
 
+import json
+
 from CollegiateHighGame.network_handler.udp_handler import UdpHandler
 from CollegiateHighGame.network_handler.tcp_handler import TcpClient
 
@@ -56,16 +58,17 @@ class NetworkConnector:
         print(message)
         message = message.decode()
 
-        message_split = message.split(",")
+        message_split = message.split(";")
         print(message_split)
 
         if message_split[0] == "set_id":
-            payload = message_split[1].split("|")
+            print(message_split[1])
+            payload = json.loads(message_split[1])
             self.id = payload[0]
             self.parent.player.x = int(payload[1])
             self.parent.player.y = int(payload[2])
         if message_split[0] == "client_list":
-            self.parent.register_clients(message_split[1].split("|"))
+            self.parent.register_clients(message_split[1])
 
     def close(self):
         self.udp_server.is_listening = False
