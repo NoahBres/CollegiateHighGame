@@ -70,6 +70,6 @@ class Server:
         sock.send(f"set_id,{self.clients[udp_addr].id}".encode())
 
         if len(self.clients) > 1:
-            client_addrs = f"{'|'.join([c for c in self.clients.keys()])}"
+            client_addrs = f"{'|'.join([c.id for c in self.clients.values()])}"
 
             self.broadcast("client_list", client_addrs)
