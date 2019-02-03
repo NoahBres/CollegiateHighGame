@@ -64,17 +64,24 @@ class Server:
 
     def register_user(self, sock, udp_addr, addr):
         print("register new user")
+        new_client = None
         if udp_addr not in self.clients:
-            self.clients[udp_addr] = Client(sock, addr[0], addr[1], udp_addr)
+            new_client = Client(sock, addr[0], addr[1], udp_addr)
+            self.clients[udp_addr] = new_client
+        else:
+            new_client = self.clients[udp_addr]
 
         new_client_x = 10 if len(self.clients) == 1 else 740
         new_client_y = 275 if len(self.clients) == 1 else 275
+
+        new_client.props["x"] = new_client_x
+        new_client.props["y"] = new_client_y
 
         sock.send(
             f"set_id,{self.clients[udp_addr].id}|{new_client_x}|{new_client_y}".encode()
         )
 
         if len(self.clients) > 1:
-            client_addrs = f"{'|'.join([c.id for c in self.clients.values()])}"
+            client_addrs = f"{'|'.join([';'.join([c.id, str(c.props['x']), str(c.props['y'])]) for c in self.clients.values()])}"
 
             self.broadcast("client_list", client_addrs)
