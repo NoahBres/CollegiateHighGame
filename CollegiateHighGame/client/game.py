@@ -2,6 +2,8 @@ from sys import exit
 import pygame
 from pygame import locals
 
+from .network_connector import NetworkConnector
+
 (width, height) = (800, 600)
 background = (0, 0, 0)
 
@@ -11,6 +13,7 @@ ticks_per_second = 60
 
 class Game:
     def __init__(self, address, tcp_port, udp_port, udp_address):
+        self.connector = NetworkConnector(address, tcp_port, udp_port, udp_address)
         self.running = False
 
         self.tcp_port = tcp_port
@@ -18,7 +21,7 @@ class Game:
         self.udp_address = udp_address
 
     def run(self):
-        # self.connect()
+        self.connector.register()
 
         pygame.init()
 
@@ -35,9 +38,11 @@ class Game:
                 self.update()
                 self.draw(screen)
 
+            self.connector.close()
             pygame.quit()
             exit(0)
-        except SystemExit():
+        except SystemExit:
+            self.connector.close()
             pygame.quit()
             exit(0)  # Redudant but ¯\_(ツ)_/¯
 
