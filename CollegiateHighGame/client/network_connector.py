@@ -8,13 +8,15 @@ from CollegiateHighGame.network_handler.tcp_handler import TcpClient
 
 
 class NetworkConnector:
-    def __init__(self, address, tcp_port, udp_port, udp_addr):
+    def __init__(self, address, tcp_port, udp_port, udp_addr, parent):
         self.id = None
 
         self.address = address
         self.tcp_port = tcp_port
         self.udp_port = udp_port
         self.udp_addr = udp_addr
+
+        self.parent = parent
 
         self.client_udp = (address, int(udp_addr))
         self.lock = threading.Lock()
@@ -57,6 +59,8 @@ class NetworkConnector:
 
         if message_split[0] == "set_id":
             self.id = message_split[1]
+        if message_split[0] == "client_list":
+            self.parent.register_clients(message_split[1].split("|"))
 
     def close(self):
         self.udp_server.is_listening = False
