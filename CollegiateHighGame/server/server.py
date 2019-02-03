@@ -1,7 +1,7 @@
 from threading import Lock
 
-from .tcp_server import TcpServer
-from .udp_server import UdpServer
+from CollegiateHighGame.network_handler.tcp_handler import TcpServer
+from CollegiateHighGame.network_handler.udp_handler import UdpHandler
 
 
 class Server:
@@ -13,8 +13,8 @@ class Server:
     def start(self):
         lock = Lock()
 
-        udp_server = UdpServer(self.address, self.udp_port, lock, self)
-        tcp_server = TcpServer(self.address, self.tcp_port, lock, self)
+        udp_server = UdpHandler(self.address, self.udp_port, lock, self.on_udp_message)
+        tcp_server = TcpServer(self.address, self.tcp_port, lock, self.on_tcp_message)
 
         udp_server.start()
         tcp_server.start()
@@ -39,3 +39,17 @@ class Server:
 
         udp_server.join()
         tcp_server.join()
+
+    def on_tcp_message(self, message, sock):
+        print(message)
+        message = message.decode()
+
+        message_split = message.split(",")
+        print(message_split)
+
+        if message_split[0] == "reg":
+            print("register new user")
+            sock.send(b"test")
+
+    def on_udp_message(self, message, sock):
+        print(message)
