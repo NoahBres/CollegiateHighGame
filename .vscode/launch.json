@@ -30,12 +30,34 @@
         "--udpaddr",
         "1235"
       ]
+    },
+    {
+      "name": "Client 2",
+      "type": "python",
+      "request": "launch",
+      "module": "client",
+      "console": "externalTerminal",
+      "env": { "PYTHONPATH": "${workspaceRoot}/CollegiateHighGame" },
+      "args": [
+        "--address",
+        "127.0.0.1",
+        "--tcpport",
+        "1234",
+        "--udpport",
+        "1234",
+        "--udpaddr",
+        "1236"
+      ]
     }
   ],
   "compounds": [
     {
       "name": "Server/Client",
       "configurations": ["Server", "Client 1"]
+    },
+    {
+      "name": "Server/Client/Client",
+      "configurations": ["Server", "Client 1", "Client 2"]
     }
   ]
 }
