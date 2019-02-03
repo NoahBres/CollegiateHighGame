@@ -90,6 +90,6 @@ class Game:
 
         for item in new_clients:
             new_player = NetworkPlayer(item[0])
-            new_player.x = item[1]
+            new_player.x = int(item[1])
             new_player.y = item[2]
             self.clients[item[0]] = new_player
