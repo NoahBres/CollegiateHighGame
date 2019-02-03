@@ -23,6 +23,7 @@ class Game:
         self.udp_port = udp_port
         self.udp_address = udp_address
 
+        self.player = Player()
         self.clients = {}
 
     def run(self):
@@ -35,8 +36,6 @@ class Game:
 
         screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption(f"Collegiate Tech Club Game - {self.connector.id}")
-
-        self.player = Player()
 
         self.running = True
 
