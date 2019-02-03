@@ -4,6 +4,7 @@ from pygame import locals
 
 from .network_connector import NetworkConnector
 from .player import Player
+from .network_player import NetworkPlayer
 
 (width, height) = (800, 600)
 background = (0, 0, 0)
@@ -17,7 +18,6 @@ class Game:
         self.connector = NetworkConnector(
             address, tcp_port, udp_port, udp_address, self
         )
-        self.running = False
 
         self.tcp_port = tcp_port
         self.udp_port = udp_port
@@ -25,6 +25,8 @@ class Game:
 
         self.player = Player()
         self.clients = {}
+
+        self.running = False
 
     def run(self):
         self.connector.register()
@@ -77,13 +79,17 @@ class Game:
 
         self.player.draw(screen)
 
+        for client in self.clients.values():
+            client.draw(screen)
+
         pygame.display.flip()
 
     def register_clients(self, client_list):
-        print(client_list)
+        client_props = [x.split(";") for x in client_list]
+        new_clients = list(filter(lambda x: x[0] != self.connector.id, client_props))
 
-        new_items = set(client_list) - self.clients.keys()
-
-        for item in new_items:
-            if item != self.connector.id:
-                print(f"fellow client: {item}")
+        for item in new_clients:
+            new_player = NetworkPlayer(item[0])
+            new_player.x = item[1]
+            new_player.y = item[2]
+            self.clients[item[0]] = new_player
