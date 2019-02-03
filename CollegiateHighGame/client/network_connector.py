@@ -29,7 +29,7 @@ class NetworkConnector:
         self.server_tcp = (address, int(tcp_port))
 
     def register(self):
-        print("Registering")
+        print("Registering...")
         self.send_tcp(f"reg,{self.udp_addr}")
 
     def send_udp(self, package):
@@ -50,6 +50,13 @@ class NetworkConnector:
 
     def on_tcp_message(self, message, sock):
         print(message)
+        message = message.decode()
+
+        message_split = message.split(",")
+        print(message_split)
+
+        if message_split[0] == "set_id":
+            self.id = message_split[1]
 
     def close(self):
         self.udp_server.is_listening = False
