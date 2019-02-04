@@ -58,6 +58,10 @@
     {
       "name": "Server/Client/Client",
       "configurations": ["Server", "Client 1", "Client 2"]
+    },
+    {
+      "name": "Client/Client",
+      "configurations": ["Client 1", "Client 2"]
     }
   ]
 }
