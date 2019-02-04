@@ -109,3 +109,8 @@ class Game:
             new_player.x = int(item[1])
             new_player.y = int(item[2])
             self.clients[item[0]] = new_player
+
+    def client_move(self, id, coords):
+        print("move me daddy")
+        self.clients[id].x = coords[0]
+        self.clients[id].y = coords[1]

@@ -1,4 +1,5 @@
 import hashlib
+import socket
 from time import time
 
 
@@ -11,6 +12,22 @@ class Client:
         self.sock = sock
 
         self.props = {}
+
+    def send_tcp(self, payload):
+        if isinstance(payload, str):
+            payload = str.encode(payload)
+
+        self.sock.send(payload)
+
+    def send_udp(self, payload):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        if isinstance(payload, str):
+            payload = str.encode(payload)
+
+        print((self.address, self.udp_port), payload)
+
+        sock.sendto(payload, (self.address, self.udp_port))
 
     @staticmethod
     def get_unique_id():

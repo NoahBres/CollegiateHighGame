@@ -16,8 +16,8 @@ class UdpHandler(Thread):
     def run(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind((self.address, self.udp_port))
-        self.sock.setblocking(False)
-        self.sock.settimeout(5)
+        # self.sock.setblocking(False)
+        # self.sock.settimeout(5)
 
         while self.is_listening:
             try:

@@ -53,6 +53,22 @@ class NetworkConnector:
 
     def on_udp_message(self, message, sock):
         print(message)
+        message = message.decode()
+
+        message_split = message.split(";")
+        print(message_split)
+
+        action = message_split[0]
+        payload = message_split[1]
+
+        print("Testestset")
+
+        if action == "pm":
+            payload = json.loads(payload)
+            other_player_id = payload[0]
+            other_player_coords = payload[1]
+
+            self.parent.client_move(other_player_id, other_player_coords)
 
     def on_tcp_message(self, message, sock):
         print(message)
@@ -61,13 +77,15 @@ class NetworkConnector:
         message_split = message.split(";")
         print(message_split)
 
-        if message_split[0] == "set_id":
+        action = message_split[0]
+
+        if action == "set_id":
             print(message_split[1])
             payload = json.loads(message_split[1])
             self.id = payload[0]
             self.parent.player.x = int(payload[1])
             self.parent.player.y = int(payload[2])
-        if message_split[0] == "client_list":
+        if action == "client_list":
             self.parent.register_clients(message_split[1])
 
     def close(self):

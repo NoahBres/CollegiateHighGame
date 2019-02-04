@@ -7,6 +7,7 @@ from CollegiateHighGame.network_handler.udp_handler import UdpHandler
 from .client import Client
 
 
+# TODO Switch the abbreivated network commands to enums that both client and server share
 class Server:
     def __init__(self, address, tcp_port, udp_port):
         self.address = address
@@ -35,7 +36,7 @@ class Server:
         while is_running:
             cmd = input("> ")
             if cmd == "list":
-                print("Yo yo")
+                print(self.clients)
             elif cmd == "quit":
                 print("Shutting down server...")
                 udp_server.is_listening = False
@@ -53,9 +54,10 @@ class Server:
         print(message_split)
 
         action = message_split[0]
+        payload = message_split[1]
 
         if action == "reg":
-            self.register_user(sock, message_split[1], addr)
+            self.register_user(sock, payload, addr)
 
     def on_udp_message(self, message, sock):
         print(message)
@@ -64,21 +66,47 @@ class Server:
         message_split = message.split(";")
         print(message_split)
 
-        # origin = message_split[0]
-        payload = message_split[1]
+        origin = message_split[0]
+        payload = json.loads(message_split[1])
 
-        print(payload)
+        for item in payload:
+            action = item[0]
+            sub_payload = item[1]
+            if action == "m":
+                # props_to_update = {"x": sub_payload[0], "y": sub_payload[1]}
+                # self.update_player(origin, props_to_update)
 
-    def broadcast(self, action, message):
-        print("broadcast")
+                player = next(
+                    (x for x in self.clients.values() if x.id == origin), None
+                )
+                player.x = sub_payload[0]
+                player.y = sub_payload[1]
+
+                self.broadcast_udp_except(
+                    "pm", json.dumps([origin, (player.x, player.y)]), origin
+                )
+
+    def broadcast_tcp(self, action, message):
+        print("broadcast_tcp")
         for client in self.clients.values():
-            client.sock.send(f"{action};{message}".encode())
+            client.send_tcp(f"{action};{message}")
 
-    def broadcast_except(self, action, message, exceptions):
-        print(f"broadcast except: {exceptions}")
+    def broadcast_tcp_except(self, action, message, exceptions):
+        print(f"broadcast_tcp except: {exceptions}")
         for client in self.clients.values():
             if client.id not in exceptions:
-                client.sock.send(f"{action};{message}".encode())
+                client.send_tcp(f"{action};{message}")
+
+    def broadcast_udp(self, action, message):
+        print("broadcast_udp")
+        for client in self.clients.values():
+            client.send_udp(f"{action};{message}")
+
+    def broadcast_udp_except(self, action, message, exceptions):
+        print(f"broadcast_udp except: {exceptions}")
+        for client in self.clients.values():
+            if client.id not in exceptions:
+                client.send_udp(f"{action};{message}")
 
     def register_user(self, sock, udp_addr, addr):
         print("register new user")
@@ -105,4 +133,15 @@ class Server:
             ]
             client_addrs = json.dumps(client_addrs)
 
-            self.broadcast("client_list", client_addrs)
+            self.broadcast_tcp("client_list", client_addrs)
+
+    def update_player(self, id, props):
+        player = next((x for x in self.clients.values() if x.id == id), None)
+
+        if player is None:
+            return
+
+        for item in props:
+            player.props[item] = props[item]
+
+        print(player.props)
