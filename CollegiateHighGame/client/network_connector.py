@@ -37,7 +37,7 @@ class NetworkConnector:
         self.send_tcp(f"reg,{self.udp_addr}")
 
     def send_udp(self, package):
-        payload = f"{self.id},{package}"
+        payload = f"{self.id};{package}"
 
         if isinstance(payload, str):
             payload = str.encode(payload)
