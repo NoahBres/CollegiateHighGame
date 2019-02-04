@@ -52,16 +52,33 @@ class Server:
         message_split = message.split(",")
         print(message_split)
 
-        if message_split[0] == "reg":
+        action = message_split[0]
+
+        if action == "reg":
             self.register_user(sock, message_split[1], addr)
 
     def on_udp_message(self, message, sock):
         print(message)
+        message = message[0].decode()
+
+        message_split = message.split(";")
+        print(message_split)
+
+        # origin = message_split[0]
+        payload = message_split[1]
+
+        print(payload)
 
     def broadcast(self, action, message):
         print("broadcast")
         for client in self.clients.values():
             client.sock.send(f"{action};{message}".encode())
+
+    def broadcast_except(self, action, message, exceptions):
+        print(f"broadcast except: {exceptions}")
+        for client in self.clients.values():
+            if client.id not in exceptions:
+                client.sock.send(f"{action};{message}".encode())
 
     def register_user(self, sock, udp_addr, addr):
         print("register new user")
