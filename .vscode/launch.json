@@ -9,7 +9,7 @@
       "type": "python",
       "request": "launch",
       "module": "CollegiateHighGame",
-      "console": "none"
+      "console": "externalTerminal"
     }
   ]
 }
