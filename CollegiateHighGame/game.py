@@ -5,6 +5,7 @@ from pygame import locals
 
 # from .states.state import State
 from .states.intro_state import IntroState
+from .states.game_state import GameState
 
 width, height = (800, 600)
 
@@ -30,6 +31,7 @@ class Game:
 
         self.joystick_count = pygame.joystick.get_count()
         self.current_state = IntroState(self)
+        self.current_state.on("start-pressed", self.next_state)
 
         self.is_running = True
 
@@ -55,7 +57,7 @@ class Game:
                     self.is_running = False
                     return
 
-        self.current_state.poll_events()
+        self.current_state.poll_events(events)
 
     def draw(self, screen):
         self.current_state.draw(screen)
@@ -68,3 +70,7 @@ class Game:
 
     def update(self):
         self.current_state.update()
+
+    def next_state(self):
+        if isinstance(self.current_state, IntroState):
+            self.current_state = GameState(self)
