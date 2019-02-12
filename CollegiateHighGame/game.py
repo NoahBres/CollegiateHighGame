@@ -58,8 +58,11 @@ class Game:
         self.current_state.poll_events()
 
     def draw(self, screen):
-        # screen.fill((255, 0, 0))
         self.current_state.draw(screen)
+
+        fps_font = pygame.font.Font(None, 25)
+        fps = fps_font.render(f"{str(int(clock.get_fps()))} fps", True, (255, 255, 255))
+        screen.blit(fps, (10, 10))
 
         pygame.display.flip()
 
