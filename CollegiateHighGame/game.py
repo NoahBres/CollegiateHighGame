@@ -6,7 +6,7 @@ from pygame import locals
 # from .states.state import State
 from .states.intro_state import IntroState
 
-(width, height) = (800, 600)
+width, height = (800, 600)
 
 clock = pygame.time.Clock()
 ticks_per_second = 60
@@ -15,13 +15,21 @@ ticks_per_second = 60
 class Game:
     def __init__(self):
         self.is_running = False
-        self.current_state = IntroState()
+
+        # Just setting so it can pass into the states
+        self.width = width
+        self.height = height
+        self.center_width = width / 2
+        self.center_height = height / 2
 
     def run(self):
         pygame.init()
 
         screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption(f"Collegiate Tech Club Game")
+
+        self.joystick_count = pygame.joystick.get_count()
+        self.current_state = IntroState(self)
 
         self.is_running = True
 
