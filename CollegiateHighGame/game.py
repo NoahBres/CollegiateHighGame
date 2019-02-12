@@ -7,7 +7,6 @@ from pygame import locals
 from .states.intro_state import IntroState
 from .states.game_state import GameState
 
-width, height = (800, 600)
 
 clock = pygame.time.Clock()
 ticks_per_second = 60
@@ -18,15 +17,23 @@ class Game:
         self.is_running = False
 
         # Just setting so it can pass into the states
-        self.width = width
-        self.height = height
-        self.center_width = width / 2
-        self.center_height = height / 2
+        # self.width = width
+        # self.height = height
+        # self.center_width = width / 2
+        # self.center_height = height / 2
 
     def run(self):
         pygame.init()
 
-        screen = pygame.display.set_mode((width, height))
+        # Setup screen
+        video_info = pygame.display.Info()
+
+        self.width = video_info.current_w - 500
+        self.height = video_info.current_h - 310
+        self.center_width = self.width / 2
+        self.center_height = self.height / 2
+
+        screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
         pygame.display.set_caption(f"Collegiate Tech Club Game")
 
         self.joystick_count = pygame.joystick.get_count()
