@@ -2,7 +2,8 @@ from collections import defaultdict
 
 
 class State:
-    def __init__(self):
+    def __init__(self, game):
+        self.game = game
         self.event_listeners = defaultdict(list)
 
     def draw(self, screen):
