@@ -1,6 +1,8 @@
 import time
 
 import pygame
+from pygame import locals
+
 from .state import State
 
 
@@ -8,13 +10,6 @@ class IntroState(State):
     def __init__(self, *args, **kwargs):
         # State.__init__(self)
         super().__init__(*args, **kwargs)
-
-        # self.title = {
-        #     "size": 60,
-        #     "offset-y": -60,
-        #     "color": (255, 255, 255),
-        #     "font": pygame.font.SysFont(None, self.title["size"]),
-        # }
 
         self.title = TextObject(
             "Test Title",
@@ -53,6 +48,11 @@ class IntroState(State):
         self.title.draw(screen)
         self.joystick_connected_text.draw(screen)
         self.press_enter_to_start.draw(screen)
+
+    def poll_events(self, events):
+        for event in events:
+            if event.type == locals.KEYUP:
+                self.emit("start-pressed")
 
 
 class TextObject:
