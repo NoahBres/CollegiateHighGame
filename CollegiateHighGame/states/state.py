@@ -12,7 +12,7 @@ class State:
     def update(self):
         pass
 
-    def poll_events(self):
+    def poll_events(self, events):
         pass
 
     def on(self, event_name, listener):
