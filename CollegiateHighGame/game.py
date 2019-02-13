@@ -33,7 +33,9 @@ class Game:
         self.center_width = self.width / 2
         self.center_height = self.height / 2
 
-        screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode(
+            (self.width, self.height), pygame.RESIZABLE
+        )
         pygame.display.set_caption(f"Collegiate Tech Club Game")
 
         self.joystick_count = pygame.joystick.get_count()
@@ -45,7 +47,7 @@ class Game:
         while self.is_running:
             self.poll_events()
             self.update()
-            self.draw(screen)
+            self.draw(self.screen)
 
             clock.tick(ticks_per_second)
 
@@ -74,6 +76,7 @@ class Game:
         screen.blit(fps, (10, 10))
 
         pygame.display.flip()
+        # pygame.display.update(pygame.Rect(100, 100, 500, 500))
 
     def update(self):
         self.current_state.update()
