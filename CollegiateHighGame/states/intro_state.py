@@ -1,3 +1,4 @@
+import os
 import time
 
 import pygame
@@ -57,10 +58,16 @@ class IntroState(State):
 
 class TextObject:
     def __init__(self, text, size, centerx, centery, color):
+        base_path = os.path.dirname(__file__)
+        font_path = os.path.abspath(os.path.join(base_path, os.path.pardir))
+        font_path = os.path.join(
+            font_path, "assets", "fonts", "kenvector_future_thin.ttf"
+        )
+
         self.text = text
         self.size = size
         self.color = color
-        self.font = pygame.font.SysFont(None, self.size)
+        self.font = pygame.font.Font(font_path, self.size)
         self.centerx = centerx
         self.centery = centery
 
