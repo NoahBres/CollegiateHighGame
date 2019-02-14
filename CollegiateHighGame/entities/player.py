@@ -61,6 +61,7 @@ class Player(pygame.sprite.Sprite):
         limit_vec(self.velocity, self.max_speed)
 
         if self.acceleration.length() == 0 and self.velocity.length() > 0.00001:
+            self.velocity.scale_to_length(self.velocity.length() * 0.97)
 
         self.position += self.velocity
         self.acceleration.x = 0
