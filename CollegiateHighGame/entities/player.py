@@ -41,8 +41,9 @@ class Player(pygame.sprite.Sprite):
             self.surface.get_rect().height / 2,
         )
 
-        self.max_speed = 5
-        self.max_steer = 0.1
+        self.max_speed = 9
+        self.max_steer = 0.2
+        self.deceleration_rate = 0.97
 
         self.angle = 0
 
@@ -50,14 +51,16 @@ class Player(pygame.sprite.Sprite):
         self.velocity = Vector2(0, 0)
         self.acceleration = Vector2(0, 0)
 
-        if DEBUG_TARGET:
-            self.target = self.rect.copy()
-            self.target_radius = self.rect.width * 1.3
-            self.target_angle = -90
+        self.target = self.rect.copy()
+        self.target_radius = 0
+        self.target_max_radius = self.rect.width * 1.3
+        self.target_angle = -90
 
     def update(self):
         self.velocity += self.acceleration
         limit_vec(self.velocity, self.max_speed)
+
+        if self.acceleration.length() == 0 and self.velocity.length() > 0.00001:
 
         self.position += self.velocity
         self.acceleration.x = 0
@@ -65,17 +68,20 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.center = self.position
 
-        self.target_angle += 2
-
         self.target.centerx = (
-            cos(radians(self.target_angle)) * self.target_radius + self.rect.centerx
+            cos(radians(self.target_angle))
+            * (self.target_radius * self.target_max_radius)
+            + self.rect.centerx
         )
         self.target.centery = (
-            sin(radians(self.target_angle)) * self.target_radius + self.rect.centery
+            sin(radians(self.target_angle))
+            * (self.target_radius * self.target_max_radius)
+            + self.rect.centery
         )
 
-        self.arrive_target(Vector2(self.target.centerx, self.target.centery))
-        self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
+        if self.target_radius > 0:
+            self.arrive_target(Vector2(self.target.centerx, self.target.centery))
+            self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
 
     def draw(self):
         self.surface.blit(self.image, self.rect)
@@ -86,7 +92,7 @@ class Player(pygame.sprite.Sprite):
                 self.surface,
                 (255, 255, 255),
                 self.rect.center,
-                int(self.target_radius),
+                int(self.target_max_radius),
                 1,
             )
 
