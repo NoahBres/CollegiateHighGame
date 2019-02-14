@@ -42,6 +42,9 @@ class Game:
         self.current_state = IntroState(self)
         self.current_state.on("start-pressed", self.next_state)
 
+        # Skip intro
+        self.next_state()
+
         self.is_running = True
 
         while self.is_running:
