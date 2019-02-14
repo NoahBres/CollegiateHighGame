@@ -1,8 +1,10 @@
 import os
-from math import cos, sin, radians
+from math import cos, sin, atan2, radians, degrees
+
 import pygame
 
-from CollegiateHighGame.util.vector import Vector
+from pygame.math import Vector2
+from CollegiateHighGame.util.utils import remap, limit_vec
 
 DEBUG_TARGET = True
 
@@ -34,20 +36,19 @@ class Player(pygame.sprite.Sprite):
 
         self.surface = surface
 
-        # self.x = 20
-        # self.y = 20
         self.rect.center = (
             self.surface.get_rect().width / 2,
             self.surface.get_rect().height / 2,
         )
 
-        self.max_speed = 1
+        self.max_speed = 5
+        self.max_steer = 0.1
 
         self.angle = 0
 
-        self.position = Vector(self.rect.center)
-        self.velocity = Vector(0, 0)
-        self.acceleration = Vector(0, 0)
+        self.position = Vector2(self.rect.center)
+        self.velocity = Vector2(0, 0)
+        self.acceleration = Vector2(0, 0)
 
         if DEBUG_TARGET:
             self.target = self.rect.copy()
@@ -56,22 +57,25 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         self.velocity += self.acceleration
-        # self.velocity.limit(self.max_speed)
+        limit_vec(self.velocity, self.max_speed)
 
         self.position += self.velocity
-        self.acceleration = Vector(0, 0)
+        self.acceleration.x = 0
+        self.acceleration.y = 0
 
         self.rect.center = self.position
 
-        if DEBUG_TARGET:
-            self.target_angle += 3
+        self.target_angle += 2
 
-            self.target.centerx = (
-                cos(radians(self.target_angle)) * self.target_radius + self.rect.centerx
-            )
-            self.target.centery = (
-                sin(radians(self.target_angle)) * self.target_radius + self.rect.centery
-            )
+        self.target.centerx = (
+            cos(radians(self.target_angle)) * self.target_radius + self.rect.centerx
+        )
+        self.target.centery = (
+            sin(radians(self.target_angle)) * self.target_radius + self.rect.centery
+        )
+
+        self.arrive_target(Vector2(self.target.centerx, self.target.centery))
+        self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
 
     def draw(self):
         self.surface.blit(self.image, self.rect)
@@ -92,7 +96,27 @@ class Player(pygame.sprite.Sprite):
             )
 
     def apply_force(self, force):
-        self.acceleration += Vector(force)
+        self.acceleration += force
+
+    def arrive_target(self, target):
+        desired_pos = target - self.position
+        desired_mag = desired_pos.length()
+
+        # Scale with arbitrary damping within 100 pixels
+        if desired_mag < 100:
+            mapped = remap(desired_mag, 0, 100, 0, self.max_speed)
+            desired_pos.scale_to_length(mapped)
+        else:
+            desired_mag.scale_to_length(self.max_speed)
+
+        steer = desired_pos - self.velocity
+        limit_vec(steer, self.max_steer)
+        self.apply_force(steer)
+
+    def set_angle(self, angle):
+        self.angle = angle
+        self.image = pygame.transform.rotate(self.scaled_image, self.angle)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
     @property
     def angle(self):
