@@ -1,5 +1,10 @@
-import pygame
 import os
+from math import cos, sin, radians
+import pygame
+
+from CollegiateHighGame.util.vector import Vector
+
+DEBUG_TARGET = True
 
 
 class Player(pygame.sprite.Sprite):
@@ -31,17 +36,63 @@ class Player(pygame.sprite.Sprite):
 
         # self.x = 20
         # self.y = 20
-        self.cx = self.surface.get_rect().width / 2
-        self.cy = self.surface.get_rect().height / 2
-        self.rect.center = (self.cx, self.cy)
+        self.rect.center = (
+            self.surface.get_rect().width / 2,
+            self.surface.get_rect().height / 2,
+        )
+
+        self.max_speed = 1
 
         self.angle = 0
 
+        self.position = Vector(self.rect.center)
+        self.velocity = Vector(0, 0)
+        self.acceleration = Vector(0, 0)
+
+        if DEBUG_TARGET:
+            self.target = self.rect.copy()
+            self.target_radius = self.rect.width * 1.3
+            self.target_angle = -90
+
+    def update(self):
+        self.velocity += self.acceleration
+        # self.velocity.limit(self.max_speed)
+
+        self.position += self.velocity
+        self.acceleration = Vector(0, 0)
+
+        self.rect.center = self.position
+
+        if DEBUG_TARGET:
+            self.target_angle += 3
+
+            self.target.centerx = (
+                cos(radians(self.target_angle)) * self.target_radius + self.rect.centerx
+            )
+            self.target.centery = (
+                sin(radians(self.target_angle)) * self.target_radius + self.rect.centery
+            )
+
     def draw(self):
-        # self.surface.blit(
-        #     self.image, (self.rect.center - self.rect.width / 2, self.cy - self.rect.height / 2)
-        # )
         self.surface.blit(self.image, self.rect)
+
+        # Debug Target
+        if DEBUG_TARGET:
+            pygame.draw.circle(
+                self.surface,
+                (255, 255, 255),
+                self.rect.center,
+                int(self.target_radius),
+                1,
+            )
+
+            target_size = 3
+            pygame.draw.circle(
+                self.surface, (0, 255, 0), self.target.center, target_size
+            )
+
+    def apply_force(self, force):
+        self.acceleration += Vector(force)
 
     @property
     def angle(self):
