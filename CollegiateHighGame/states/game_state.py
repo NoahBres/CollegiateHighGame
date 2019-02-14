@@ -32,6 +32,34 @@ class GameState(State):
         self.player1 = Player("playerShip1_red", self.player1_view)
         self.player2 = Player("playerShip1_blue", self.player2_view)
 
+    def poll_events(self, events):
+        keys = pygame.key.get_pressed()
+
+        if keys[locals.K_w]:
+            self.player1.target_radius = 1
+            if keys[locals.K_d]:
+                self.player1.target_angle = 315
+            elif keys[locals.K_a]:
+                self.player1.target_angle = 225
+            else:
+                self.player1.target_angle = 270
+        elif keys[locals.K_s]:
+            self.player1.target_radius = 1
+            if keys[locals.K_d]:
+                self.player1.target_angle = 45
+            elif keys[locals.K_a]:
+                self.player1.target_angle = 135
+            else:
+                self.player1.target_angle = 90
+        elif keys[locals.K_d]:
+            self.player1.target_radius = 1
+            self.player1.target_angle = 0
+        elif keys[locals.K_a]:
+            self.player1.target_radius = 1
+            self.player1.target_angle = 180
+        else:
+            self.player1.target_radius = 0
+
     def update(self):
         # self.player1.apply_force((0.01, 0.01))
         # self.player1.angle += 10
