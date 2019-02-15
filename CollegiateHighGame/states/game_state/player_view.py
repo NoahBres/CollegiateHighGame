@@ -51,5 +51,4 @@ class PlayerView:
                 self.padding_rect.bottomleft,
                 self.padding_rect.topleft,
             ]
-            print(line_points)
             pygame.draw.lines(self.surface, (255, 255, 255), True, line_points, 1)
