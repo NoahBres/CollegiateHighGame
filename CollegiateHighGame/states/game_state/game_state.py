@@ -59,7 +59,7 @@ class GameState(State):
             coords=player1_view_coords,
             player=self.player1,
             game=self,
-            padding=(140, 140),
+            padding=(160, 160),
         )
         self.player2_view = PlayerView(
             surface=self.game.screen,
@@ -67,7 +67,7 @@ class GameState(State):
             coords=player2_view_coords,
             player=self.player2,
             game=self,
-            padding=(140, 140),
+            padding=(160, 160),
         )
 
         self.player1.world_pos = Vector2(self.player1_view.coords.center)
