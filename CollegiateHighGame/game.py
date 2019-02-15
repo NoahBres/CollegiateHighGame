@@ -5,7 +5,7 @@ from pygame import locals
 
 # from .states.state import State
 from .states.intro_state import IntroState
-from .states.game_state import GameState
+from .states.game_state.game_state import GameState
 
 
 clock = pygame.time.Clock()
