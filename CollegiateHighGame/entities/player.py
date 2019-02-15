@@ -89,32 +89,7 @@ class Player(pygame.sprite.Sprite, Entity):
             self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
 
     def poll_events(self, events):
-        keys = pygame.key.get_pressed()
-
-        if keys[self.key_mapping["up"]]:
-            self.target_radius = 1
-            if keys[self.key_mapping["right"]]:
-                self.target_angle = 315
-            elif keys[self.key_mapping["left"]]:
-                self.target_angle = 225
-            else:
-                self.target_angle = 270
-        elif keys[self.key_mapping["down"]]:
-            self.target_radius = 1
-            if keys[self.key_mapping["right"]]:
-                self.target_angle = 45
-            elif keys[self.key_mapping["left"]]:
-                self.target_angle = 135
-            else:
-                self.target_angle = 90
-        elif keys[self.key_mapping["right"]]:
-            self.target_radius = 1
-            self.target_angle = 0
-        elif keys[self.key_mapping["left"]]:
-            self.target_radius = 1
-            self.target_angle = 180
-        else:
-            self.target_radius = 0
+        pass
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()
