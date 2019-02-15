@@ -2,16 +2,19 @@ import os
 from math import cos, sin, atan2, radians, degrees
 
 import pygame
-
 from pygame.math import Vector2
+
+from .entity import Entity
 from CollegiateHighGame.util.utils import remap, limit_vec
 
 DEBUG_TARGET = True
 
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, sprite_name, surface):
-        super().__init__()
+class Player(pygame.sprite.Sprite, Entity):
+    def __init__(self, x, y, sprite_name, game):
+        # super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+        Entity.__init__(self)
 
         # -- Load image -- #
         base_path = os.path.dirname(__file__)
@@ -34,12 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # -- Load Image -- #
 
-        self.surface = surface
-
-        self.rect.center = (
-            self.surface.get_rect().width / 2,
-            self.surface.get_rect().height / 2,
-        )
+        self.rect.center = (x, y)
 
         self.max_speed = 9
         self.max_steer = 0.2
@@ -56,6 +54,10 @@ class Player(pygame.sprite.Sprite):
         self.target_max_radius = self.rect.width * 1.3
         self.target_angle = -90
 
+        self.key_mapping = {"up": None, "down": None, "left": None, "right": None}
+
+        self.game = game
+
     def update(self):
         self.velocity += self.acceleration
         limit_vec(self.velocity, self.max_speed)
@@ -64,6 +66,8 @@ class Player(pygame.sprite.Sprite):
             self.velocity.scale_to_length(self.velocity.length() * 0.97)
 
         self.position += self.velocity
+        self.game.world_state.entities[self].world_pos = self.position
+
         self.acceleration.x = 0
         self.acceleration.y = 0
 
@@ -84,13 +88,45 @@ class Player(pygame.sprite.Sprite):
             self.arrive_target(Vector2(self.target.centerx, self.target.centery))
             self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
 
-    def draw(self):
-        self.surface.blit(self.image, self.rect)
+    def poll_events(self, events):
+        keys = pygame.key.get_pressed()
+
+        if keys[self.key_mapping["up"]]:
+            self.target_radius = 1
+            if keys[self.key_mapping["right"]]:
+                self.target_angle = 315
+            elif keys[self.key_mapping["left"]]:
+                self.target_angle = 225
+            else:
+                self.target_angle = 270
+        elif keys[self.key_mapping["down"]]:
+            self.target_radius = 1
+            if keys[self.key_mapping["right"]]:
+                self.target_angle = 45
+            elif keys[self.key_mapping["left"]]:
+                self.target_angle = 135
+            else:
+                self.target_angle = 90
+        elif keys[self.key_mapping["right"]]:
+            self.target_radius = 1
+            self.target_angle = 0
+        elif keys[self.key_mapping["left"]]:
+            self.target_radius = 1
+            self.target_angle = 180
+        else:
+            self.target_radius = 0
+
+    def draw(self, surface, coords=None):
+        rect = self.rect.copy()
+        if coords is not None:
+            rect.center = coords
+
+        surface.blit(self.image, rect)
 
         # Debug Target
-        if DEBUG_TARGET:
+        if coords is None and DEBUG_TARGET:
             pygame.draw.circle(
-                self.surface,
+                surface,
                 (255, 255, 255),
                 self.rect.center,
                 int(self.target_max_radius),
@@ -98,9 +134,7 @@ class Player(pygame.sprite.Sprite):
             )
 
             target_size = 3
-            pygame.draw.circle(
-                self.surface, (0, 255, 0), self.target.center, target_size
-            )
+            pygame.draw.circle(surface, (0, 255, 0), self.target.center, target_size)
 
     def apply_force(self, force):
         self.acceleration += force
