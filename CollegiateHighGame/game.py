@@ -26,16 +26,22 @@ class Game:
         pygame.init()
 
         # Setup screen
-        video_info = pygame.display.Info()
+        # video_info = pygame.display.Info()
 
-        self.width = video_info.current_w - 500
-        self.height = video_info.current_h - 310
+        # self.width = video_info.current_w - 500
+        # self.height = video_info.current_h - 310
+        # self.center_width = self.width / 2
+        # self.center_height = self.height / 2
+
+        # self.screen = pygame.display.set_mode(
+        #     (self.width, self.height), pygame.RESIZABLE
+        # )
+        self.width = 1500
+        self.height = 770
         self.center_width = self.width / 2
         self.center_height = self.height / 2
 
-        self.screen = pygame.display.set_mode(
-            (self.width, self.height), pygame.RESIZABLE
-        )
+        self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(f"Collegiate Tech Club Game")
 
         self.joystick_count = pygame.joystick.get_count()
