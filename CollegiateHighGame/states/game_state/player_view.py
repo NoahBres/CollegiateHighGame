@@ -26,6 +26,8 @@ class PlayerView:
             dimensions.height - padding[1] * 2,
         )
 
+        self.player.view = self
+
     def draw(self):
         for key, entity in self.game.world_state.entities.items():
             if key != self.player:
@@ -37,13 +39,6 @@ class PlayerView:
         self.player.draw(self.surface)
 
         if DEBUG_PADDING_LINE:
-            # pygame.draw.line(
-            #     self.surface,
-            #     (255, 255, 255),
-            #     self.padding_rect.topleft,
-            #     self.padding_rect.bottomleft,
-            #     1,
-            # )
             line_points = [
                 self.padding_rect.topleft,
                 self.padding_rect.topright,
@@ -52,31 +47,3 @@ class PlayerView:
                 self.padding_rect.topleft,
             ]
             pygame.draw.lines(self.surface, (255, 255, 255), True, line_points, 1)
-
-    def poll_events(self, events):
-        keys = pygame.key.get_pressed()
-
-        if keys[self.player.key_mapping["up"]]:
-            self.player.target_radius = 1
-            if keys[self.player.key_mapping["right"]]:
-                self.player.target_angle = 315
-            elif keys[self.player.key_mapping["left"]]:
-                self.player.target_angle = 225
-            else:
-                self.player.target_angle = 270
-        elif keys[self.player.key_mapping["down"]]:
-            self.player.target_radius = 1
-            if keys[self.player.key_mapping["right"]]:
-                self.player.target_angle = 45
-            elif keys[self.player.key_mapping["left"]]:
-                self.player.target_angle = 135
-            else:
-                self.player.target_angle = 90
-        elif keys[self.player.key_mapping["right"]]:
-            self.player.target_radius = 1
-            self.player.target_angle = 0
-        elif keys[self.player.key_mapping["left"]]:
-            self.player.target_radius = 1
-            self.player.target_angle = 180
-        else:
-            self.player.target_radius = 0

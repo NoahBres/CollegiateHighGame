@@ -57,6 +57,7 @@ class Player(pygame.sprite.Sprite, Entity):
         self.key_mapping = {"up": None, "down": None, "left": None, "right": None}
 
         self.game = game
+        self.view = None
 
     def update(self):
         self.velocity += self.acceleration
@@ -65,8 +66,31 @@ class Player(pygame.sprite.Sprite, Entity):
         if self.acceleration.length() == 0 and self.velocity.length() > 0.00001:
             self.velocity.scale_to_length(self.velocity.length() * 0.97)
 
-        self.position += self.velocity
-        self.game.world_state.entities[self].world_pos = self.position
+        # self.view.coords.move(self.velocity)
+        # self.view.coords.x += self.velocity.x
+        # self.view.coords.y += self.velocity.y
+        # self.game.world_state.entities[self].world_pos += self.velocity
+        # self.position += self.velocity
+        # self.game.world_state.entities[self].world_pos = self.position
+
+        # if (self.position.x <= self.view.padding_rect.x + self.rect.width) or (
+        #     self.position.x + self.rect.width / 2
+        #     >= self.view.padding_rect.x + self.view.padding_rect.width
+        # ):
+        #     self.view.coords.x += self.velocity.x
+        #     self.position.x -= self.velocity.x
+
+        # if (self.position.y <= self.view.padding_rect.y) or (
+        #     self.position.y + self.rect.height
+        #     >= self.view.padding_rect.y + self.view.padding_rect.height
+        # ):
+        #     self.view.coords.y += self.velocity.y
+        #     self.position.y -= self.velocity.y
+
+        # center player in frame movement
+        self.game.world_state.entities[self].world_pos += self.velocity
+        self.view.coords.center = self.game.world_state.entities[self].world_pos
+        # self.view.coords += self.velocity
 
         self.acceleration.x = 0
         self.acceleration.y = 0
@@ -89,7 +113,32 @@ class Player(pygame.sprite.Sprite, Entity):
             self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
 
     def poll_events(self, events):
-        pass
+        keys = pygame.key.get_pressed()
+
+        if keys[self.key_mapping["up"]]:
+            self.target_radius = 1
+            if keys[self.key_mapping["right"]]:
+                self.target_angle = 315
+            elif keys[self.key_mapping["left"]]:
+                self.target_angle = 225
+            else:
+                self.target_angle = 270
+        elif keys[self.key_mapping["down"]]:
+            self.target_radius = 1
+            if keys[self.key_mapping["right"]]:
+                self.target_angle = 45
+            elif keys[self.key_mapping["left"]]:
+                self.target_angle = 135
+            else:
+                self.target_angle = 90
+        elif keys[self.key_mapping["right"]]:
+            self.target_radius = 1
+            self.target_angle = 0
+        elif keys[self.key_mapping["left"]]:
+            self.target_radius = 1
+            self.target_angle = 180
+        else:
+            self.target_radius = 0
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()
