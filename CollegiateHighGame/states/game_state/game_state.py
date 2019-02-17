@@ -50,7 +50,7 @@ class GameState(State):
             "right": locals.K_RIGHT,
         }
 
-        player1_view_coords = (50, 0)
+        player1_view_coords = (0, 0)
         player2_view_coords = (0, 0)
 
         self.player1_view = PlayerView(
@@ -59,7 +59,7 @@ class GameState(State):
             coords=player1_view_coords,
             player=self.player1,
             game=self,
-            padding=(160, 160),
+            padding=(130, 130),
         )
         self.player2_view = PlayerView(
             surface=self.game.screen,
@@ -67,7 +67,7 @@ class GameState(State):
             coords=player2_view_coords,
             player=self.player2,
             game=self,
-            padding=(160, 160),
+            padding=(130, 130),
         )
 
         self.player1.world_pos = Vector2(self.player1_view.coords.center)
