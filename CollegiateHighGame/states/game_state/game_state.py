@@ -4,6 +4,7 @@ from pygame import locals, Vector2
 # from .state import State
 from CollegiateHighGame.states.state import State
 from CollegiateHighGame.entities.player import Player
+from CollegiateHighGame.entities.starfield import Starfield
 from .player_view import PlayerView
 
 white = (255, 255, 255)
@@ -77,6 +78,8 @@ class GameState(State):
         self.world_state.entities[self.player1] = self.player1
         self.world_state.entities[self.player2] = self.player2
 
+        self.starfield = Starfield([self.player1_view, self.player2_view])
+
     def poll_events(self, events):
         self.player1.poll_events(events)
         self.player2.poll_events(events)
@@ -84,11 +87,16 @@ class GameState(State):
     def update(self):
         # self.player1.apply_force((0.01, 0.01))
         # self.player1.angle += 10
+
         self.player1.update()
         self.player2.update()
 
+        self.starfield.update()
+
     def draw(self, screen):
         screen.fill(self.background)
+
+        self.starfield.draw()
 
         self.player1_view.draw()
         self.player2_view.draw()
