@@ -10,9 +10,8 @@ class HashMap:
         self.cell_size = cell_size
         self.grid = defaultdict(list)
 
-        self.last_query_list_length = 2
-        self.last_area_query_points = []
-        self.last_area_query_list = []
+        self.max_query_cache = 2
+        self.query_area_cache = [(0, 0)] * self.max_query_cache
 
     def key(self, point):
         return (
@@ -31,8 +30,18 @@ class HashMap:
 
         return self.grid.get(key, [])
 
-    def query_area(self, point, width, height):
+    def query_area(self, point, width, height, query_id=0):
         # start = time.clock()
+
+        # TODO Fix query caching
+        # key = self.key(point)
+        key = point
+
+        # This query introduces a 5x speedup when the player isn't moving
+        if self.query_area_cache[query_id][0] == (key, width, height):
+            # passed = time.clock() - start
+            # print(f"CQuery took {passed * 1000}ms")
+            return self.query_area_cache[query_id][1]
 
         squares_to_query = []
         # These 2 loops almost make no difference. Thought it would be faster tho
@@ -49,7 +58,9 @@ class HashMap:
                 [self.query_point((query_x, query_y)), (query_x, query_y)]
             )
 
+        self.query_area_cache[query_id] = ((key, width, height), squares_to_query)
+
         # passed = time.clock() - start
-        # print(f"Query took {passed * 1000} ms")
+        # print(f" Query took {passed * 1000} ms")
 
         return squares_to_query
