@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-DEBUG_PADDING_LINE = True
+DEBUG_PADDING_LINE = False
 
 
 class PlayerView:
@@ -37,6 +37,12 @@ class PlayerView:
                 entity.draw(self.surface, offset_coords)
 
         self.player.draw(self.surface)
+
+        coords_font = pygame.font.Font(None, 25)
+        coords_text = coords_font.render(
+            f"{self.coords.centerx}, {self.coords.centery}", True, (255, 255, 255)
+        )
+        self.surface.blit(coords_text, (10, self.surface.get_width() - 10))
 
         if DEBUG_PADDING_LINE:
             line_points = [
