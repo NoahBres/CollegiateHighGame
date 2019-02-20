@@ -79,6 +79,7 @@ class GameState(State):
         self.world_state.entities[self.player2] = self.player2
 
         self.starfield = Starfield([self.player1_view, self.player2_view])
+        self.starfield.prefill(10000, self.world_state.width, self.world_state.height)
 
     def poll_events(self, events):
         self.player1.poll_events(events)
