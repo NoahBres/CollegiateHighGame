@@ -34,7 +34,7 @@ class Starfield(Entity):
         #     )
         #     for cell, point in query:
         #         if len(cell) == 0:
-        #             # print(cell)
+        #             print(cell)
         #             self.fill_with_stars(point)
 
         pass
@@ -70,7 +70,7 @@ class Starfield(Entity):
             x += randrange(self.cell_size)
             y += randrange(self.cell_size)
 
-            self.hash_map.add([x, y], (x, y))
+            self.hash_map.add(([x, y], randrange(self.star_length)), (x, y))
 
     def prefill(self, star_count, max_x, max_y):
         print("Filling the sky with stars...")
@@ -82,10 +82,6 @@ class Starfield(Entity):
             self.hash_map.add(([x, y], randrange(self.star_length)), (x, y))
         passed = time.clock() - start
         print(f"The sky is lit. Took {passed} seconds")
-
-    def draw_star(self, point):
-
-        pass
 
     def load_images(self):
         base_path = os.path.dirname(__file__)

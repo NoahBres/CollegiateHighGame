@@ -51,8 +51,18 @@ class GameState(State):
             "right": locals.K_RIGHT,
         }
 
-        player1_view_coords = (0, 0)
-        player2_view_coords = (0, 0)
+        self.world_state = WorldState()
+        self.world_state.entities[self.player1] = self.player1
+        self.world_state.entities[self.player2] = self.player2
+
+        player1_view_coords = (
+            0,
+            self.world_state.height / 2 - player_view1_dimensions.height / 2,
+        )
+        player2_view_coords = (
+            self.world_state.width - player_view2_dimensions.width,
+            self.world_state.height / 2 - player_view2_dimensions.height / 2,
+        )
 
         self.player1_view = PlayerView(
             surface=self.game.screen,
@@ -73,10 +83,6 @@ class GameState(State):
 
         self.player1.world_pos = Vector2(self.player1_view.coords.center)
         self.player2.world_pos = Vector2(self.player2_view.coords.center)
-
-        self.world_state = WorldState()
-        self.world_state.entities[self.player1] = self.player1
-        self.world_state.entities[self.player2] = self.player2
 
         self.starfield = Starfield([self.player1_view, self.player2_view])
         self.starfield.prefill(10000, self.world_state.width, self.world_state.height)
@@ -114,7 +120,7 @@ class GameState(State):
 # State of the world. Not a "state" of the program
 class WorldState:
     def __init__(self):
-        self.width = 10000
-        self.height = 10000
+        self.width = 6000
+        self.height = 6000
 
         self.entities = {}
