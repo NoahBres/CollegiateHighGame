@@ -1,6 +1,8 @@
 import pygame
 from pygame.math import Vector2
 
+from .mini_map import MiniMap
+
 DEBUG_PADDING_LINE = False
 
 
@@ -28,6 +30,16 @@ class PlayerView:
 
         self.player.view = self
 
+        mini_map_dimen = (150, 150)
+        mini_map_padding = (10, 10)
+        self.mini_map = MiniMap(
+            dimensions.width - mini_map_dimen[0] - mini_map_padding[0],
+            mini_map_padding[1],
+            mini_map_dimen[0],
+            mini_map_dimen[1],
+            self,
+        )
+
     def draw(self):
         for key, entity in self.game.world_state.entities.items():
             if key != self.player:
@@ -43,6 +55,8 @@ class PlayerView:
             f"{self.coords.centerx}, {self.coords.centery}", True, (255, 255, 255)
         )
         self.surface.blit(coords_text, (10, self.surface.get_width() - 10))
+
+        self.mini_map.draw(self.surface)
 
         if DEBUG_PADDING_LINE:
             line_points = [
