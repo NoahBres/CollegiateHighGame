@@ -6,7 +6,7 @@ import pygame
 from pygame import locals
 
 # from .states.state import State
-from .states.intro_state import IntroState
+from .states.intro_state.intro_state import IntroState
 from .states.game_state.game_state import GameState
 
 
@@ -32,6 +32,7 @@ class Game:
             pr.enable()
 
         pygame.init()
+        pygame.joystick.init()
 
         # Setup screen
         # video_info = pygame.display.Info()
@@ -57,7 +58,7 @@ class Game:
         self.current_state.on("start-pressed", self.next_state)
 
         # Skip intro
-        self.next_state()
+        # self.next_state()
 
         self.is_running = True
 
