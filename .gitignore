@@ -108,3 +108,6 @@ Pipfile.lock
 
 # Personal vscode settings
 .vscode/settings.json
+
+# cProfile file
+profile

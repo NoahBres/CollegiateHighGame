@@ -1,6 +1,8 @@
 from sys import exit
-import pygame
+import cProfile
+import pstats
 
+import pygame
 from pygame import locals
 
 # from .states.state import State
@@ -10,6 +12,8 @@ from .states.game_state.game_state import GameState
 
 clock = pygame.time.Clock()
 ticks_per_second = 60
+
+DEBUG_CPROFILE = True
 
 
 class Game:
@@ -23,6 +27,10 @@ class Game:
         # self.center_height = height / 2
 
     def run(self):
+        if DEBUG_CPROFILE:
+            pr = cProfile.Profile()
+            pr.enable()
+
         pygame.init()
 
         # Setup screen
@@ -60,7 +68,12 @@ class Game:
 
             clock.tick(ticks_per_second)
 
-        pygame.quit()
+        if DEBUG_CPROFILE:
+            pygame.quit()
+            pr.disable()
+            pstats.Stats(pr).strip_dirs().sort_stats("time").print_stats()
+            pr.dump_stats("profile")
+
         exit(0)
 
     def poll_events(self):
