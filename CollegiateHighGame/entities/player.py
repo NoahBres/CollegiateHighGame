@@ -5,6 +5,7 @@ import pygame
 from pygame.math import Vector2
 
 from .entity import Entity
+from .laser import Laser
 from CollegiateHighGame.util.utils import remap, limit_vec
 
 DEBUG_TARGET = True
@@ -16,10 +17,12 @@ class Player(pygame.sprite.Sprite, Entity):
         pygame.sprite.Sprite.__init__(self)
         Entity.__init__(self)
 
-        # -- Load image -- #
+        # -- Begin Load image -- #
         base_path = os.path.dirname(__file__)
-        image_path = os.path.abspath(os.path.join(base_path, os.path.pardir))
-        image_path = os.path.join(image_path, "assets", "ships", f"{sprite_name}.png")
+        base_path = os.path.abspath(os.path.join(base_path, os.path.pardir))
+        image_path = os.path.join(base_path, "assets", "ships", f"{sprite_name}.png")
+
+        fire_path = os.path.join(base_path, "assets", "effects", f"fire17.png")
 
         self.orig_image = pygame.image.load(image_path).convert_alpha()
         # self.image.set_colorkey((0, 0, 0))
@@ -35,7 +38,17 @@ class Player(pygame.sprite.Sprite, Entity):
         )
         self.image = self.scaled_image
         self.rect = self.image.get_rect()
-        # -- Load Image -- #
+
+        fire_scale = 0.6
+        self.fire_img = pygame.image.load(fire_path).convert_alpha()
+        self.fire_img = pygame.transform.smoothscale(
+            self.fire_img,
+            (
+                int(self.fire_img.get_width() * fire_scale),
+                int(self.fire_img.get_height() * fire_scale),
+            ),
+        )
+        # -- End Load Image -- #
 
         self.rect.center = (x, y)
 
@@ -54,7 +67,13 @@ class Player(pygame.sprite.Sprite, Entity):
         self.target_max_radius = self.rect.width * 1.3
         self.target_angle = -90
 
-        self.key_mapping = {"up": None, "down": None, "left": None, "right": None}
+        self.key_mapping = {
+            "up": None,
+            "down": None,
+            "left": None,
+            "right": None,
+            "shoot": None,
+        }
 
         self.game = game
         self.view = None
@@ -140,10 +159,17 @@ class Player(pygame.sprite.Sprite, Entity):
         else:
             self.target_radius = 0
 
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == self.key_mapping["shoot"]:
+                    self.shoot()
+
     def draw(self, surface, coords=None):
         rect = self.rect.copy()
         if coords is not None:
             rect.center = coords
+
+        # surface.blit(self.fire_img, rect)
 
         surface.blit(self.image, rect)
 
@@ -195,3 +221,9 @@ class Player(pygame.sprite.Sprite, Entity):
         self.image = pygame.transform.rotate(self.scaled_image, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
         # self.image.get_rect().center = orig_center
+
+    def shoot(self):
+        Laser(
+            self.world_pos.x, self.world_pos.y, self.angle, 15, "laserRed01", self.game
+        )
+

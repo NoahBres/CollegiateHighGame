@@ -42,6 +42,7 @@ class GameState(State):
             "down": locals.K_s,
             "left": locals.K_a,
             "right": locals.K_d,
+            "shoot": locals.K_SPACE,
         }
 
         self.player2.key_mapping = {
@@ -49,6 +50,7 @@ class GameState(State):
             "down": locals.K_DOWN,
             "left": locals.K_LEFT,
             "right": locals.K_RIGHT,
+            "shoot": locals.K_RSHIFT,
         }
 
         self.world_state = WorldState()
@@ -95,8 +97,11 @@ class GameState(State):
         # self.player1.apply_force((0.01, 0.01))
         # self.player1.angle += 10
 
-        self.player1.update()
-        self.player2.update()
+        for ent in self.world_state.entities:
+            ent.update()
+
+        # self.player1.update()
+        # self.player2.update()
 
         self.starfield.update()
 
