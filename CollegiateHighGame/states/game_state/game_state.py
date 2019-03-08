@@ -97,7 +97,7 @@ class GameState(State):
         # self.player1.apply_force((0.01, 0.01))
         # self.player1.angle += 10
 
-        for ent in self.world_state.entities:
+        for ent in list(self.world_state.entities):
             ent.update()
 
         # self.player1.update()

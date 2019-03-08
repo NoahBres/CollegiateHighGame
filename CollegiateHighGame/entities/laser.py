@@ -25,15 +25,25 @@ class Laser(pygame.sprite.Sprite, Entity):
         self.world_pos = Vector2(x, y)
         self.angle = angle
 
-        game.world_state.entities[self] = self
+        self.bound_x = game.world_state.width
+        self.bound_y = game.world_state.height
+        self.game = game
+        self.game.world_state.entities[self] = self
 
         self.translation_vector = Vector2(0, 1).rotate(180 - angle)
         self.translation_vector.scale_to_length(speed)
 
-        print(angle)
-
     def update(self):
         self.world_pos += self.translation_vector
+
+        if (
+            self.world_pos.x < 0
+            or self.world_pos.x > self.bound_x
+            or self.world_pos.y < 0
+            or self.world_pos.y > self.bound_y
+        ):
+            print(self.rect, self.world_pos)
+            del self.game.world_state.entities[self]
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()
