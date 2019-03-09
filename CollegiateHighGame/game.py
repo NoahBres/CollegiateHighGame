@@ -58,7 +58,7 @@ class Game:
         self.current_state.on("start-pressed", self.next_state)
 
         # Skip intro
-        # self.next_state()
+        self.next_state()
 
         self.is_running = True
 
@@ -99,6 +99,7 @@ class Game:
         screen.blit(fps, (10, 10))
 
         pygame.display.flip()
+        # pygame.display.update()
         # pygame.display.update(pygame.Rect(100, 100, 500, 500))
 
     def update(self):

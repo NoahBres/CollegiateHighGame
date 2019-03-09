@@ -1,5 +1,6 @@
 import time
 
+import pygame
 from pygame import locals
 
 from CollegiateHighGame.states.state import State
@@ -77,4 +78,9 @@ class IntroState(State):
         for event in events:
             if event.type == locals.KEYUP:
                 self.emit("start-pressed")
+
+            if event.type == pygame.JOYBUTTONDOWN:
+                pass
+            if event.type == pygame.JOYBUTTONUP:
+                pass
 
