@@ -58,7 +58,7 @@ class IntroState(State):
             TextObject.align_left,
         )
 
-    def update(self):
+    def update(self, delta_time):
         seconds = time.time()
         # Blink text
         self.press_enter_to_start.color = (

@@ -16,7 +16,7 @@ class Entity:
     def __ne__(self, other):
         return not (self == other)
 
-    def update(self):
+    def update(self, delta_time):
         pass
 
     def draw(self, surface):

@@ -1,4 +1,5 @@
 from sys import exit
+
 import cProfile
 import pstats
 
@@ -9,9 +10,7 @@ from pygame import locals
 from .states.intro_state.intro_state import IntroState
 from .states.game_state.game_state import GameState
 
-
-clock = pygame.time.Clock()
-ticks_per_second = 60
+TARGET_FPS = 60
 
 DEBUG_CPROFILE = True
 
@@ -25,6 +24,11 @@ class Game:
         # self.height = height
         # self.center_width = width / 2
         # self.center_height = height / 2
+
+        self.clock = pygame.time.Clock()
+
+        self.dt = 1000 / TARGET_FPS
+        self.accumulated_time = 0.0
 
     def run(self):
         if DEBUG_CPROFILE:
@@ -63,11 +67,16 @@ class Game:
         self.is_running = True
 
         while self.is_running:
-            self.poll_events()
-            self.update()
+            self.accumulated_time += self.clock.get_time()
+
+            while self.accumulated_time >= self.dt:
+                self.poll_events()
+                self.update(self.dt)
+                self.accumulated_time -= self.dt
             self.draw(self.screen)
 
-            clock.tick(ticks_per_second)
+            # clock.tick(ticks_per_second)
+            self.clock.tick()
 
         if DEBUG_CPROFILE:
             pygame.quit()
@@ -95,15 +104,17 @@ class Game:
         self.current_state.draw(screen)
 
         fps_font = pygame.font.Font(None, 25)
-        fps = fps_font.render(f"{str(int(clock.get_fps()))} fps", True, (255, 255, 255))
+        fps = fps_font.render(
+            f"{str(int(self.clock.get_fps()))} fps", True, (255, 255, 255)
+        )
         screen.blit(fps, (10, 10))
 
         pygame.display.flip()
         # pygame.display.update()
         # pygame.display.update(pygame.Rect(100, 100, 500, 500))
 
-    def update(self):
-        self.current_state.update()
+    def update(self, delta_time):
+        self.current_state.update(delta_time)
 
     def next_state(self):
         if isinstance(self.current_state, IntroState):

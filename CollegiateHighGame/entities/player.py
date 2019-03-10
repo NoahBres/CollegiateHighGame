@@ -52,7 +52,7 @@ class Player(pygame.sprite.Sprite, Entity):
 
         self.rect.center = (x, y)
 
-        self.max_speed = 9
+        self.max_speed = 7
         self.max_steer = 0.2
         self.deceleration_rate = 0.97
 
@@ -78,7 +78,7 @@ class Player(pygame.sprite.Sprite, Entity):
         self.game = game
         self.view = None
 
-    def update(self):
+    def update(self, delta_time):
         self.velocity += self.acceleration
         limit_vec(self.velocity, self.max_speed)
 
@@ -107,7 +107,9 @@ class Player(pygame.sprite.Sprite, Entity):
         #     self.position.y -= self.velocity.y
 
         # center player in frame movement
-        self.game.world_state.entities[self].world_pos += self.velocity
+        self.game.world_state.entities[self].world_pos += (
+            self.velocity / 10
+        ) * delta_time
         self.view.coords.center = self.game.world_state.entities[self].world_pos
         # self.view.coords += self.velocity
 
@@ -224,6 +226,6 @@ class Player(pygame.sprite.Sprite, Entity):
 
     def shoot(self):
         Laser(
-            self.world_pos.x, self.world_pos.y, self.angle, 15, "laserRed01", self.game
+            self.world_pos.x, self.world_pos.y, self.angle, 10, "laserRed01", self.game
         )
 

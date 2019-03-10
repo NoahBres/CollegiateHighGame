@@ -9,7 +9,7 @@ class State:
     def draw(self, screen):
         pass
 
-    def update(self):
+    def update(self, delta_time):
         pass
 
     def poll_events(self, events):

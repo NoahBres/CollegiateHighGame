@@ -23,7 +23,7 @@ class Starfield(Entity):
         self.star_length = 1
         self.load_images()
 
-    def update(self):
+    def update(self, delta_time):
         # print(self.player_views[0].coords)
         # print(self.player_views[1].coords)
         # print(self.hash_map.grid)

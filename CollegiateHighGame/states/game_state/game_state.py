@@ -93,17 +93,17 @@ class GameState(State):
         self.player1.poll_events(events)
         self.player2.poll_events(events)
 
-    def update(self):
+    def update(self, delta_time):
         # self.player1.apply_force((0.01, 0.01))
         # self.player1.angle += 10
 
         for ent in list(self.world_state.entities):
-            ent.update()
+            ent.update(delta_time)
 
         # self.player1.update()
         # self.player2.update()
 
-        self.starfield.update()
+        self.starfield.update(delta_time)
 
     def draw(self, screen):
         screen.fill(self.background)
