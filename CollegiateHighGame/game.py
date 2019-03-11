@@ -11,6 +11,7 @@ from .states.intro_state.intro_state import IntroState
 from .states.game_state.game_state import GameState
 
 TARGET_FPS = 60
+PANIC_STEPS = 240
 
 DEBUG_CPROFILE = True
 
@@ -69,13 +70,19 @@ class Game:
         while self.is_running:
             self.accumulated_time += self.clock.get_time()
 
+            num_update_steps = 0
             while self.accumulated_time >= self.dt:
                 self.poll_events()
                 self.update(self.dt)
                 self.accumulated_time -= self.dt
+
+                num_update_steps += 1
+                if num_update_steps >= PANIC_STEPS:
+                    self.panic()
+                    break
+
             self.draw(self.screen)
 
-            # clock.tick(ticks_per_second)
             self.clock.tick()
 
         if DEBUG_CPROFILE:
@@ -85,6 +92,9 @@ class Game:
             pr.dump_stats("profile")
 
         exit(0)
+
+    def panic(self):
+        self.accumulated_time = 0
 
     def poll_events(self):
         events = pygame.event.get()
