@@ -12,6 +12,7 @@ from .states.game_state.game_state import GameState
 
 TARGET_FPS = 60
 PANIC_STEPS = 240
+CAP_FRAMERATE = True
 
 DEBUG_CPROFILE = True
 
@@ -83,7 +84,10 @@ class Game:
 
             self.draw(self.screen)
 
-            self.clock.tick()
+            if CAP_FRAMERATE:
+                self.clock.tick(TARGET_FPS)
+            else:
+                self.clock.tick()
 
         if DEBUG_CPROFILE:
             pygame.quit()
