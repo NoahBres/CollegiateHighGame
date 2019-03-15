@@ -2,8 +2,6 @@ import itertools
 from math import ceil
 from collections import defaultdict
 
-import time
-
 
 class HashMap:
     def __init__(self, cell_size):
@@ -22,6 +20,21 @@ class HashMap:
     def add(self, obj, point):
         key = self.key(point)
         self.grid[key].append(obj)
+
+    def delete(self, obj, point):
+        key = self.key(point)
+        cell = self.grid.get(key, [])
+
+        cell.remove(obj)
+        if not cell:
+            del self.grid[key]
+        # del self.grid[key]
+
+    def update(self, obj, last_point, new_point):
+        if last_point == new_point:
+            return
+        self.delete(obj, last_point)
+        self.add(obj, new_point)
 
     def query_point(self, point):
         key = self.key(point)
