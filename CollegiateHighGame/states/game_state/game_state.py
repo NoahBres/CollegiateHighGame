@@ -5,6 +5,7 @@ from pygame import locals, Vector2
 from CollegiateHighGame.states.state import State
 from CollegiateHighGame.entities.player import Player
 from CollegiateHighGame.entities.starfield import Starfield
+from CollegiateHighGame.util.hash_map import HashMap
 from .player_view import PlayerView
 
 white = (255, 255, 255)
@@ -86,6 +87,9 @@ class GameState(State):
         self.player1.world_pos = Vector2(self.player1_view.coords.center)
         self.player2.world_pos = Vector2(self.player2_view.coords.center)
 
+        self.world_state.entities_map.add(self.player1, self.player1.world_pos)
+        self.world_state.entities_map.add(self.player2, self.player2.world_pos)
+
         self.starfield = Starfield([self.player1_view, self.player2_view])
         self.starfield.prefill(10000, self.world_state.width, self.world_state.height)
 
@@ -94,11 +98,16 @@ class GameState(State):
         self.player2.poll_events(events)
 
     def update(self, delta_time):
-        # self.player1.apply_force((0.01, 0.01))
-        # self.player1.angle += 10
-
         for ent in list(self.world_state.entities):
             ent.update(delta_time)
+
+            if isinstance(ent, Player):
+                for item in self.world_state.entities_map.query_point(ent.world_pos):
+                    if item is not ent:
+                        ent.collide(item)
+        # for key, cell in list(self.world_state.entities_map.grid.items()):
+        # for ent in cell:
+        # ent.update(delta_time)
 
         # self.player1.update()
         # self.player2.update()
@@ -129,3 +138,7 @@ class WorldState:
         self.height = 6000
 
         self.entities = {}
+        # self.entities_spatial =
+        self.cell_size = 100
+        self.entities_map = HashMap(self.cell_size)
+
