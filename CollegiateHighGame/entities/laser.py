@@ -8,7 +8,7 @@ from .entity import Entity
 
 
 class Laser(pygame.sprite.Sprite, Entity):
-    def __init__(self, x, y, angle, speed, sprite_name, game):
+    def __init__(self, x, y, angle, speed, sprite_name, game, source):
         pygame.sprite.Sprite.__init__(self)
         Entity.__init__(self)
 
@@ -17,8 +17,15 @@ class Laser(pygame.sprite.Sprite, Entity):
         image_path = os.path.join(base_path, "assets", "lasers", f"{sprite_name}.png")
 
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.scale = 0.8
-        self.image = pygame.transform.rotozoom(self.image, angle, self.scale)
+        scale = 0.8
+        size = self.image.get_size()
+        scaled_dimen = ((int(size[0] * scale)), int(size[1] * scale))
+        self.image = pygame.transform.smoothscale(self.image, scaled_dimen)
+
+        self.orig_rect = self.image.get_rect()
+
+        self.image = pygame.transform.rotate(self.image, angle)
+        # self.image = pygame.transform.rotozoom(self.image, angle, self.scale)
 
         self.rect = self.image.get_rect()
 
@@ -29,12 +36,18 @@ class Laser(pygame.sprite.Sprite, Entity):
         self.bound_y = game.world_state.height
         self.game = game
         self.game.world_state.entities[self] = self
+        self.game.world_state.entities_map.add(self, self.world_pos)
 
         self.translation_vector = Vector2(0, 1).rotate(180 - angle)
         self.translation_vector.scale_to_length(speed)
 
+        self.source = source
+
     def update(self, delta_time):
+        last_pos = Vector2(self.world_pos)
         self.world_pos += (self.translation_vector / 10) * delta_time
+
+        self.game.world_state.entities_map.update(self, last_pos, self.world_pos)
 
         if (
             self.world_pos.x < 0
@@ -43,6 +56,7 @@ class Laser(pygame.sprite.Sprite, Entity):
             or self.world_pos.y > self.bound_y
         ):
             print(self.rect, self.world_pos)
+            self.game.world_state.entities_map.delete(self, self.world_pos)
             del self.game.world_state.entities[self]
 
     def draw(self, surface, coords=None):
