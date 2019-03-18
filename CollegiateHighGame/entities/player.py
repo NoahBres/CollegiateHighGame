@@ -6,7 +6,7 @@ from pygame.math import Vector2
 
 from .entity import Entity
 from .laser import Laser
-from CollegiateHighGame.util.utils import remap, limit_vec
+from CollegiateHighGame.util.utils import remap, limit_vec, collide_circle_rect
 
 DEBUG_TARGET = True
 
@@ -38,6 +38,8 @@ class Player(pygame.sprite.Sprite, Entity):
         )
         self.image = self.scaled_image
         self.rect = self.image.get_rect()
+
+        self.orig_rect = self.image.get_rect()
 
         fire_scale = 0.6
         self.fire_img = pygame.image.load(fire_path).convert_alpha()
@@ -107,11 +109,13 @@ class Player(pygame.sprite.Sprite, Entity):
         #     self.position.y -= self.velocity.y
 
         # center player in frame movement
-        self.game.world_state.entities[self].world_pos += (
-            self.velocity / 10
-        ) * delta_time
-        self.view.coords.center = self.game.world_state.entities[self].world_pos
+        last_pos = Vector2(self.world_pos)
+
+        self.world_pos += (self.velocity / 10) * delta_time
+        self.view.coords.center = self.world_pos
         # self.view.coords += self.velocity
+
+        self.game.world_state.entities_map.update(self, last_pos, self.world_pos)
 
         self.acceleration.x = 0
         self.acceleration.y = 0
@@ -226,6 +230,34 @@ class Player(pygame.sprite.Sprite, Entity):
 
     def shoot(self):
         Laser(
-            self.world_pos.x, self.world_pos.y, self.angle, 10, "laserRed01", self.game
+            self.world_pos.x,
+            self.world_pos.y,
+            self.angle,
+            10,
+            "laserRed01",
+            self.game,
+            self.hash,
         )
 
+    def collide(self, entity):
+        if self.hash != entity.source and collide_circle_rect(
+            {
+                "x": self.world_pos.x,
+                "y": self.world_pos.y,
+                "radius": self.orig_rect.width,
+            },
+            {
+                "x": entity.world_pos.x,
+                "y": entity.world_pos.y,
+                "width": entity.orig_rect.width,
+                "height": entity.orig_rect.height,
+                "angle": radians(entity.angle),
+            },
+        ):
+            print("collide me")
+        # print("-----------")
+        # print(entity.orig_rect, self.orig_rect)
+        # print(entity.angle, self.angle)
+        # print(entity.world_pos, self.world_pos)
+        # print(",,,,")
+        # print(entity.rect, self.rect)

@@ -21,3 +21,6 @@ class Entity:
 
     def draw(self, surface):
         pass
+
+    def collide(self, entity):
+        pass
