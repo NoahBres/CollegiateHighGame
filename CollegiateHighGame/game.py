@@ -39,6 +39,7 @@ class Game:
 
         pygame.init()
         pygame.joystick.init()
+        pygame.mixer.init()
 
         # Setup screen
         # video_info = pygame.display.Info()

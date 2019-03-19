@@ -22,7 +22,9 @@ class Player(pygame.sprite.Sprite, Entity):
         base_path = os.path.abspath(os.path.join(base_path, os.path.pardir))
         image_path = os.path.join(base_path, "assets", "ships", f"{sprite_name}.png")
 
-        fire_path = os.path.join(base_path, "assets", "effects", f"fire17.png")
+        laser_sound_path = os.path.join(base_path, "assets", "sound", "sfx_laser1.ogg")
+
+        fire_path = os.path.join(base_path, "assets", "effects", "fire17.png")
 
         self.orig_image = pygame.image.load(image_path).convert_alpha()
         # self.image.set_colorkey((0, 0, 0))
@@ -50,7 +52,9 @@ class Player(pygame.sprite.Sprite, Entity):
                 int(self.fire_img.get_height() * fire_scale),
             ),
         )
-        # -- End Load Image -- #
+
+        self.laser_sound = pygame.mixer.Sound(laser_sound_path)
+        # -- End Load Assets -- #
 
         self.rect.center = (x, y)
 
@@ -238,6 +242,7 @@ class Player(pygame.sprite.Sprite, Entity):
             self.game,
             self.hash,
         )
+        self.laser_sound.play()
 
     def collide(self, entity):
         if self.hash != entity.source and collide_circle_rect(
