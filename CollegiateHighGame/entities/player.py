@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite, Entity):
         image_path = os.path.join(base_path, "assets", "ships", f"{sprite_name}.png")
 
         laser_sound_path = os.path.join(base_path, "assets", "sound", "sfx_laser1.ogg")
+        ping_sound_path = os.path.join(base_path, "assets", "sound", "tone1.wav")
 
         fire_path = os.path.join(base_path, "assets", "effects", "fire17.png")
 
@@ -54,6 +55,7 @@ class Player(pygame.sprite.Sprite, Entity):
         )
 
         self.laser_sound = pygame.mixer.Sound(laser_sound_path)
+        self.ping_sound = pygame.mixer.Sound(ping_sound_path)
         # -- End Load Assets -- #
 
         self.rect.center = (x, y)
@@ -259,7 +261,13 @@ class Player(pygame.sprite.Sprite, Entity):
                 "angle": radians(entity.angle),
             },
         ):
-            print("collide me")
+            self.game.world_state.entities_map.delete(entity, entity.world_pos)
+            try:
+                del self.game.world_state.entities[entity]
+            except Exception:
+                pass
+
+            self.ping_sound.play()
         # print("-----------")
         # print(entity.orig_rect, self.orig_rect)
         # print(entity.angle, self.angle)

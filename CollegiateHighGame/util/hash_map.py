@@ -25,7 +25,10 @@ class HashMap:
         key = self.key(point)
         cell = self.grid.get(key, [])
 
-        cell.remove(obj)
+        try:
+            cell.remove(obj)
+        except Exception:
+            pass
         if not cell:
             del self.grid[key]
         # del self.grid[key]
