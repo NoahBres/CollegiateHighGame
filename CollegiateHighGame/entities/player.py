@@ -86,6 +86,8 @@ class Player(pygame.sprite.Sprite, Entity):
         self.game = game
         self.view = None
 
+        self.health = 100
+
     def update(self, delta_time):
         self.velocity += self.acceleration
         limit_vec(self.velocity, self.max_speed)
@@ -96,9 +98,9 @@ class Player(pygame.sprite.Sprite, Entity):
         # self.view.coords.move(self.velocity)
         # self.view.coords.x += self.velocity.x
         # self.view.coords.y += self.velocity.y
-        # self.game.world_state.entities[self].world_pos += self.velocity
+        # self.game.entities[self].world_pos += self.velocity
         # self.position += self.velocity
-        # self.game.world_state.entities[self].world_pos = self.position
+        # self.game.entities[self].world_pos = self.position
 
         # if (self.position.x <= self.view.padding_rect.x + self.rect.width) or (
         #     self.position.x + self.rect.width / 2
@@ -121,7 +123,7 @@ class Player(pygame.sprite.Sprite, Entity):
         self.view.coords.center = self.world_pos
         # self.view.coords += self.velocity
 
-        self.game.world_state.entities_map.update(self, last_pos, self.world_pos)
+        self.game.entities_map.update(self, last_pos, self.world_pos)
 
         self.acceleration.x = 0
         self.acceleration.y = 0
@@ -261,11 +263,16 @@ class Player(pygame.sprite.Sprite, Entity):
                 "angle": radians(entity.angle),
             },
         ):
-            self.game.world_state.entities_map.delete(entity, entity.world_pos)
+            self.game.entities_map.delete(entity, entity.world_pos)
+            # print(entity)
+            # print(self.game.entities)
             try:
-                del self.game.world_state.entities[entity]
+                del self.game.entities[entity]
             except Exception:
                 pass
+
+            self.health -= 10
+            print(self.health)
 
             self.ping_sound.play()
         # print("-----------")

@@ -54,17 +54,22 @@ class GameState(State):
             "shoot": locals.K_RSHIFT,
         }
 
-        self.world_state = WorldState()
-        self.world_state.entities[self.player1] = self.player1
-        self.world_state.entities[self.player2] = self.player2
+        # World State
+        self.width = 6000
+        self.height = 6000
 
-        player1_view_coords = (
-            0,
-            self.world_state.height / 2 - player_view1_dimensions.height / 2,
-        )
+        self.entities = {}
+        # self.entities_spatial =
+        self.cell_size = 100
+        self.entities_map = HashMap(self.cell_size)
+
+        self.entities[self.player1] = self.player1
+        self.entities[self.player2] = self.player2
+
+        player1_view_coords = (0, self.height / 2 - player_view1_dimensions.height / 2)
         player2_view_coords = (
-            self.world_state.width - player_view2_dimensions.width,
-            self.world_state.height / 2 - player_view2_dimensions.height / 2,
+            self.width - player_view2_dimensions.width,
+            self.height / 2 - player_view2_dimensions.height / 2,
         )
 
         self.player1_view = PlayerView(
@@ -87,25 +92,27 @@ class GameState(State):
         self.player1.world_pos = Vector2(self.player1_view.coords.center)
         self.player2.world_pos = Vector2(self.player2_view.coords.center)
 
-        self.world_state.entities_map.add(self.player1, self.player1.world_pos)
-        self.world_state.entities_map.add(self.player2, self.player2.world_pos)
+        self.entities_map.add(self.player1, self.player1.world_pos)
+        self.entities_map.add(self.player2, self.player2.world_pos)
 
         self.starfield = Starfield([self.player1_view, self.player2_view])
-        self.starfield.prefill(10000, self.world_state.width, self.world_state.height)
+        self.starfield.prefill(10000, self.width, self.height)
 
     def poll_events(self, events):
         self.player1.poll_events(events)
         self.player2.poll_events(events)
 
     def update(self, delta_time):
-        for ent in list(self.world_state.entities):
+        print("-----")
+        for ent in list(self.entities):
             ent.update(delta_time)
 
             if isinstance(ent, Player):
-                for item in self.world_state.entities_map.query_point(ent.world_pos):
+                for item in self.entities_map.query_point(ent.world_pos):
                     if item is not ent:
                         ent.collide(item)
-        # for key, cell in list(self.world_state.entities_map.grid.items()):
+                        print(item, ent)
+        # for key, cell in list(self.entities_map.grid.items()):
         # for ent in cell:
         # ent.update(delta_time)
 
@@ -129,16 +136,3 @@ class GameState(State):
             self.game.height,
         )
         screen.fill(white, divider)
-
-
-# State of the world. Not a "state" of the program
-class WorldState:
-    def __init__(self):
-        self.width = 6000
-        self.height = 6000
-
-        self.entities = {}
-        # self.entities_spatial =
-        self.cell_size = 100
-        self.entities_map = HashMap(self.cell_size)
-

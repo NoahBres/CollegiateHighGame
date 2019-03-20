@@ -28,12 +28,8 @@ class MiniMap:
         )
 
         player_square_coords = (
-            self.view.player.world_pos[0]
-            / self.view.game.world_state.width
-            * self.width,
-            self.view.player.world_pos[1]
-            / self.view.game.world_state.height
-            * self.height,
+            self.view.player.world_pos[0] / self.view.game.width * self.width,
+            self.view.player.world_pos[1] / self.view.game.height * self.height,
         )
         player_square_width = 3
 
