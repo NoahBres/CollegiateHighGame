@@ -4,12 +4,14 @@ from collections import defaultdict
 
 
 class HashMap:
-    def __init__(self, cell_size):
+    def __init__(self, cell_size, caching=False):
         self.cell_size = cell_size
         self.grid = defaultdict(list)
 
         self.max_query_cache = 2
         self.query_area_cache = [(0, 0)] * self.max_query_cache
+
+        self.caching = caching
 
     def key(self, point):
         return (
@@ -27,8 +29,9 @@ class HashMap:
 
         try:
             cell.remove(obj)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
+            print(cell)
         if not cell:
             del self.grid[key]
         # del self.grid[key]
@@ -54,7 +57,7 @@ class HashMap:
         key = point
 
         # This query introduces a 5x speedup when the player isn't moving
-        if self.query_area_cache[query_id][0] == (key, width, height):
+        if self.caching and self.query_area_cache[query_id][0] == (key, width, height):
             # passed = time.clock() - start
             # print(f"CQuery took {passed * 1000}ms")
             return self.query_area_cache[query_id][1]
