@@ -103,15 +103,14 @@ class GameState(State):
         self.player2.poll_events(events)
 
     def update(self, delta_time):
-        print("-----")
         for ent in list(self.entities):
-            ent.update(delta_time)
+            if not ent.depose:
+                ent.update(delta_time)
 
             if isinstance(ent, Player):
                 for item in self.entities_map.query_point(ent.world_pos):
-                    if item is not ent:
+                    if item is not ent and not isinstance(item, Player):
                         ent.collide(item)
-                        print(item, ent)
         # for key, cell in list(self.entities_map.grid.items()):
         # for ent in cell:
         # ent.update(delta_time)
@@ -136,3 +135,14 @@ class GameState(State):
             self.game.height,
         )
         screen.fill(white, divider)
+
+    def add_entity(self, entity):
+        self.entities[entity] = entity
+        self.entities_map.add(entity, entity.world_pos)
+
+    def remove_entity(self, entity):
+        self.entities_map.delete(entity, entity.world_pos)
+        try:
+            del self.entities[entity]
+        except Exception:
+            pass

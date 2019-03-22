@@ -15,7 +15,7 @@ class Starfield(Entity):
 
         # self.cell_size = 100
         self.cell_size = 300
-        self.hash_map = HashMap(self.cell_size)
+        self.hash_map = HashMap(self.cell_size, True)
         self.player_views = player_views
 
         self.max_stars = 30
