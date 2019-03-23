@@ -123,7 +123,8 @@ class Player(pygame.sprite.Sprite, Entity):
         self.view.coords.center = self.world_pos
         # self.view.coords += self.velocity
 
-        self.game.entities_map.update(self, last_pos, self.world_pos)
+        if last_pos != self.world_pos:
+            self.game.entities_map.update(self, last_pos, self.world_pos)
 
         self.acceleration.x = 0
         self.acceleration.y = 0
@@ -263,13 +264,12 @@ class Player(pygame.sprite.Sprite, Entity):
                 "angle": radians(entity.angle),
             },
         ):
-            self.game.entities_map.delete(entity, entity.world_pos)
-            # print(entity)
-            # print(self.game.entities)
-            try:
-                del self.game.entities[entity]
-            except Exception:
-                pass
+            if entity.depose:
+                self.game.remove_entity(entity)
+                return
+
+            entity.depose = True
+            self.game.remove_entity(entity)
 
             self.health -= 10
             print(self.health)
