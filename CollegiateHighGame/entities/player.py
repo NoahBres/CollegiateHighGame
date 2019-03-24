@@ -27,6 +27,12 @@ class Player(pygame.sprite.Sprite, Entity):
 
         fire_path = os.path.join(base_path, "assets", "effects", "fire17.png")
 
+        damage_path = [
+            os.path.join(base_path, "assets", "effects", "playerShip1_damage1.png"),
+            os.path.join(base_path, "assets", "effects", "playerShip1_damage2.png"),
+            os.path.join(base_path, "assets", "effects", "playerShip1_damage3.png"),
+        ]
+
         self.orig_image = pygame.image.load(image_path).convert_alpha()
         # self.image.set_colorkey((0, 0, 0))
         self.rect = self.orig_image.get_rect()
@@ -54,6 +60,16 @@ class Player(pygame.sprite.Sprite, Entity):
             ),
         )
 
+        self.damage_img = [
+            pygame.image.load(img).convert_alpha() for img in damage_path
+        ]
+        self.damage_img = [
+            pygame.transform.smoothscale(img, scaled_dimensions)
+            for img in self.damage_img
+        ]
+
+        self.curr_damage_img = None
+
         self.laser_sound = pygame.mixer.Sound(laser_sound_path)
         self.ping_sound = pygame.mixer.Sound(ping_sound_path)
         # -- End Load Assets -- #
@@ -63,6 +79,13 @@ class Player(pygame.sprite.Sprite, Entity):
         self.max_speed = 7
         self.max_steer = 0.2
         self.deceleration_rate = 0.97
+
+        # To fix circular dependency between health and angle
+        self.__health = 100
+        self.__angle = 0
+
+        self.health = 100
+        self.current_damage_indicator = -1
 
         self.angle = 0
 
@@ -85,8 +108,6 @@ class Player(pygame.sprite.Sprite, Entity):
 
         self.game = game
         self.view = None
-
-        self.health = 100
 
     def update(self, delta_time):
         self.velocity += self.acceleration
@@ -187,6 +208,8 @@ class Player(pygame.sprite.Sprite, Entity):
         # surface.blit(self.fire_img, rect)
 
         surface.blit(self.image, rect)
+        if self.current_damage_indicator != -1:
+            surface.blit(self.curr_damage_img, rect)
 
         # Debug Target
         if coords is None and DEBUG_TARGET:
@@ -224,6 +247,11 @@ class Player(pygame.sprite.Sprite, Entity):
         self.image = pygame.transform.rotate(self.scaled_image, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
 
+        if self.current_damage_indicator != -1:
+            self.curr_damage_img = pygame.transform.rotate(
+                self.damage_img[self.current_damage_indicator], self.angle
+            )
+
     @property
     def angle(self):
         return self.__angle
@@ -236,6 +264,35 @@ class Player(pygame.sprite.Sprite, Entity):
         self.image = pygame.transform.rotate(self.scaled_image, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
         # self.image.get_rect().center = orig_center
+
+        if self.current_damage_indicator != -1:
+            self.curr_damage_img = pygame.transform.rotate(
+                self.damage_img[self.current_damage_indicator], self.angle
+            )
+
+    @property
+    def health(self):
+        return self.__health
+
+    @health.setter
+    def health(self, health):
+        self.__health = health
+
+        if self.health > 75:
+            self.current_damage_indicator = -1
+        elif self.health > 50:
+            self.current_damage_indicator = 0
+        elif self.health > 25:
+            self.current_damage_indicator = 1
+        else:
+            self.current_damage_indicator = 2
+
+        self.curr_damage_img = self.damage_img[self.current_damage_indicator]
+        self.curr_damage_img = pygame.transform.rotate(
+            self.damage_img[self.current_damage_indicator], self.angle
+        )
+
+        print(self.health)
 
     def shoot(self):
         Laser(
@@ -272,7 +329,6 @@ class Player(pygame.sprite.Sprite, Entity):
             self.game.remove_entity(entity)
 
             self.health -= 10
-            print(self.health)
 
             self.ping_sound.play()
         # print("-----------")
