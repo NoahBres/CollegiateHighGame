@@ -17,6 +17,9 @@ class Player(pygame.sprite.Sprite, Entity):
         pygame.sprite.Sprite.__init__(self)
         Entity.__init__(self)
 
+        self.game = game
+        self.view = None
+
         # -- Begin Load image -- #
         base_path = os.path.dirname(__file__)
         base_path = os.path.abspath(os.path.join(base_path, os.path.pardir))
@@ -76,16 +79,18 @@ class Player(pygame.sprite.Sprite, Entity):
 
         self.rect.center = (x, y)
 
-        self.max_speed = 7
-        self.max_steer = 0.2
-        self.deceleration_rate = 0.97
-
         # To fix circular dependency between health and angle
         self.__health = 100
         self.__angle = 0
 
         self.health = 100
         self.current_damage_indicator = -1
+
+        self.lives = 3
+
+        self.max_speed = 7
+        self.max_steer = 0.2
+        self.deceleration_rate = 0.97
 
         self.angle = 0
 
@@ -105,9 +110,6 @@ class Player(pygame.sprite.Sprite, Entity):
             "right": None,
             "shoot": None,
         }
-
-        self.game = game
-        self.view = None
 
     def update(self, delta_time):
         self.velocity += self.acceleration
@@ -292,6 +294,11 @@ class Player(pygame.sprite.Sprite, Entity):
             self.damage_img[self.current_damage_indicator], self.angle
         )
 
+        if self.view is not None:
+            self.view.health_ui.set_health(self.health)
+
+        if self.health < 0:
+            self.game.player_death(self)
         print(self.health)
 
     def shoot(self):
@@ -337,3 +344,8 @@ class Player(pygame.sprite.Sprite, Entity):
         # print(entity.world_pos, self.world_pos)
         # print(",,,,")
         # print(entity.rect, self.rect)
+
+    def respawn(self):
+        self.lives -= 1
+        self.health = 100
+        self.view.health_ui.set_lives(self.lives)

@@ -7,6 +7,7 @@ from CollegiateHighGame.entities.player import Player
 from CollegiateHighGame.entities.starfield import Starfield
 from CollegiateHighGame.util.hash_map import HashMap
 from .player_view import PlayerView
+from .player_health import PlayerHealth
 
 white = (255, 255, 255)
 
@@ -23,6 +24,13 @@ class GameState(State):
         )
         player_view2_dimensions = pygame.Rect(
             self.game.width / 2, 0, (int(self.game.width / 2)), int(self.game.height)
+        )
+
+        player1_health_ui = PlayerHealth(
+            (10, player_view1_dimensions.height - 10), 3, 100, "red"
+        )
+        player2_health_ui = PlayerHealth(
+            (10, player_view2_dimensions.height - 10), 3, 100, "blue"
         )
 
         self.player1 = Player(
@@ -77,6 +85,7 @@ class GameState(State):
             dimensions=player_view1_dimensions,
             coords=player1_view_coords,
             player=self.player1,
+            health_ui=player1_health_ui,
             game=self,
             padding=(130, 130),
         )
@@ -85,6 +94,7 @@ class GameState(State):
             dimensions=player_view2_dimensions,
             coords=player2_view_coords,
             player=self.player2,
+            health_ui=player2_health_ui,
             game=self,
             padding=(130, 130),
         )
@@ -146,3 +156,11 @@ class GameState(State):
             del self.entities[entity]
         except Exception:
             pass
+
+    def player_death(self, player):
+        player.respawn()
+
+        if player is self.player1:
+            print("player 1 died")
+        elif player is self.player2:
+            print("player 2 died")

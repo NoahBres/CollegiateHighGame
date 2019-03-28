@@ -7,7 +7,7 @@ DEBUG_PADDING_LINE = False
 
 
 class PlayerView:
-    def __init__(self, surface, dimensions, coords, player, game, padding):
+    def __init__(self, surface, dimensions, coords, player, health_ui, game, padding):
         self.dimensions = dimensions
         self.coords = pygame.Rect(
             coords[0], coords[1], dimensions.width, dimensions.height
@@ -29,6 +29,7 @@ class PlayerView:
         )
 
         self.player.view = self
+        self.health_ui = health_ui
 
         mini_map_dimen = (150, 150)
         mini_map_padding = (10, 10)
@@ -54,9 +55,16 @@ class PlayerView:
         coords_text = coords_font.render(
             f"{self.coords.centerx}, {self.coords.centery}", True, (255, 255, 255)
         )
-        self.surface.blit(coords_text, (10, self.surface.get_width() - 10))
+        self.surface.blit(
+            coords_text,
+            (
+                self.surface.get_width() - coords_text.get_width() - 15,
+                self.surface.get_height() - coords_text.get_height() - 20,
+            ),
+        )
 
         self.mini_map.draw(self.surface)
+        self.health_ui.draw(self.surface)
 
         if DEBUG_PADDING_LINE:
             line_points = [
