@@ -3,8 +3,12 @@ from pygame import locals, Vector2
 
 # from .state import State
 from CollegiateHighGame.states.state import State
+
 from CollegiateHighGame.entities.player import Player
+from CollegiateHighGame.entities.laser import Laser
+from CollegiateHighGame.entities.flag import Flag
 from CollegiateHighGame.entities.starfield import Starfield
+
 from CollegiateHighGame.util.hash_map import HashMap
 from .player_view import PlayerView
 from .player_health import PlayerHealth
@@ -71,9 +75,6 @@ class GameState(State):
         self.cell_size = 100
         self.entities_map = HashMap(self.cell_size)
 
-        self.entities[self.player1] = self.player1
-        self.entities[self.player2] = self.player2
-
         player1_view_coords = (0, self.height / 2 - player_view1_dimensions.height / 2)
         player2_view_coords = (
             self.width - player_view2_dimensions.width,
@@ -102,8 +103,24 @@ class GameState(State):
         self.player1.world_pos = Vector2(self.player1_view.coords.center)
         self.player2.world_pos = Vector2(self.player2_view.coords.center)
 
-        self.entities_map.add(self.player1, self.player1.world_pos)
-        self.entities_map.add(self.player2, self.player2.world_pos)
+        self.add_entity(self.player1)
+        self.add_entity(self.player2)
+
+        self.flag1 = Flag(
+            self.player1_view.coords.center[0] - 200,
+            self.player1_view.coords.center[1],
+            "spaceBuilding_014",
+            self,
+        )
+        self.add_entity(self.flag1)
+
+        self.flag2 = Flag(
+            self.player2_view.coords.center[0] + 200,
+            self.player2_view.coords.center[1],
+            "spaceBuilding_015",
+            self,
+        )
+        self.add_entity(self.flag2)
 
         self.starfield = Starfield([self.player1_view, self.player2_view])
         self.starfield.prefill(10000, self.width, self.height)
@@ -119,7 +136,7 @@ class GameState(State):
 
             if isinstance(ent, Player):
                 for item in self.entities_map.query_point(ent.world_pos):
-                    if item is not ent and not isinstance(item, Player):
+                    if item is not ent and isinstance(item, Laser):
                         ent.collide(item)
         # for key, cell in list(self.entities_map.grid.items()):
         # for ent in cell:
