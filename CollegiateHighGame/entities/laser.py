@@ -1,7 +1,6 @@
 import os
 
 import pygame
-
 from pygame.math import Vector2
 
 from .entity import Entity
@@ -17,7 +16,7 @@ class Laser(pygame.sprite.Sprite, Entity):
         image_path = os.path.join(base_path, "assets", "lasers", f"{sprite_name}.png")
 
         self.image = pygame.image.load(image_path).convert_alpha()
-        scale = 0.8
+        scale = 0.6
         size = self.image.get_size()
         scaled_dimen = ((int(size[0] * scale)), int(size[1] * scale))
         self.image = pygame.transform.smoothscale(self.image, scaled_dimen)
