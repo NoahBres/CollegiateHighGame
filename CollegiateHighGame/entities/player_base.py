@@ -80,6 +80,8 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
 
         if self.world_pos.distance_to(self.enemy.world_pos) < 600:
             self.turret.target(self.enemy.world_pos)
+        else:
+            self.turret.untarget()
 
         self.turret.update(delta_time)
 
