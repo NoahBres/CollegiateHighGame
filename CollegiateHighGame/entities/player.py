@@ -223,8 +223,9 @@ class Player(pygame.sprite.Sprite, Entity):
                 1,
             )
 
-            target_size = 3
-            pygame.draw.circle(surface, (0, 255, 0), self.target.center, target_size)
+            if self.target.center != self.rect.center:
+                target_size = 3
+                pygame.draw.circle(surface, (0, 255, 0), self.target.center, target_size)
 
     def apply_force(self, force):
         self.acceleration += force

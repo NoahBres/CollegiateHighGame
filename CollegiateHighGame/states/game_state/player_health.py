@@ -1,6 +1,5 @@
 import os
 import pygame
-from math import floor
 
 
 class PlayerHealth:
