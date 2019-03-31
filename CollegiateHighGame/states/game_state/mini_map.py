@@ -15,6 +15,11 @@ class MiniMap:
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.surface.fill(self.background)
 
+        if view.game.base1.owner is self.view.player:
+            self.base = view.game.base1
+        else:
+            self.base = view.game.base2
+
     def update(self):
         pass
 
@@ -41,6 +46,23 @@ class MiniMap:
                 player_square_coords[1] - int(player_square_width / 2),
                 player_square_width,
                 player_square_width,
+            ),
+        )
+
+        base_square_coords = (
+            self.base.world_pos[0] / self.view.game.width * self.width,
+            self.base.world_pos[1] / self.view.game.height * self.height,
+        )
+        base_square_width = 3
+
+        pygame.draw.rect(
+            self.surface,
+            (0, 255, 0),
+            pygame.Rect(
+                base_square_coords[0] - int(base_square_width / 2),
+                base_square_coords[1] - int(base_square_width / 2),
+                base_square_width,
+                base_square_width,
             ),
         )
 
