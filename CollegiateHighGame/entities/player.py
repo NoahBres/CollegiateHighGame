@@ -180,6 +180,7 @@ class Player(pygame.sprite.Sprite, Entity):
         if self.shot_count < self.shot_max and time() * 1000 - self.last_recharge_time > self.shot_recharge_time:
             self.shot_count += 1
             self.last_recharge_time = time() * 1000
+            self.view.shot_count_ui.set_count(self.shot_count)
 
     def poll_events(self, events):
         keys = pygame.key.get_pressed()
@@ -321,6 +322,8 @@ class Player(pygame.sprite.Sprite, Entity):
             return
 
         self.shot_count -= 1
+        self.last_recharge_time = time() * 1000
+        self.view.shot_count_ui.set_count(self.shot_count)
 
         Laser(
             self.world_pos.x,

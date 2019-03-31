@@ -13,6 +13,7 @@ from CollegiateHighGame.entities.starfield import Starfield
 from CollegiateHighGame.util.hash_map import HashMap
 from .player_view import PlayerView
 from .player_health import PlayerHealth
+from .shot_count import ShotCount
 
 white = (255, 255, 255)
 
@@ -37,6 +38,9 @@ class GameState(State):
         player2_health_ui = PlayerHealth(
             (10, player_view2_dimensions.height - 10), 3, 100, "blue"
         )
+
+        player1_shot_count_ui = ShotCount((10, player_view1_dimensions.height - 40), 8)
+        player2_shot_count_ui = ShotCount((10, player_view2_dimensions.height - 40), 8)
 
         self.player1 = Player(
             player_view1_dimensions.width / 2,
@@ -104,6 +108,7 @@ class GameState(State):
             coords=player1_view_coords,
             player=self.player1,
             health_ui=player1_health_ui,
+            shot_count_ui=player1_shot_count_ui,
             game=self,
             padding=(130, 130),
         )
@@ -113,6 +118,7 @@ class GameState(State):
             coords=player2_view_coords,
             player=self.player2,
             health_ui=player2_health_ui,
+            shot_count_ui=player2_shot_count_ui,
             game=self,
             padding=(130, 130),
         )
@@ -156,9 +162,7 @@ class GameState(State):
 
             if isinstance(ent, Player):
                 for item in self.entities_map.query_point(ent.world_pos):
-                    if item is not ent and (
-                        isinstance(item, Laser)
-                    ):
+                    if item is not ent and (isinstance(item, Laser)):
                         ent.collide(item)
         # for key, cell in list(self.entities_map.grid.items()):
         # for ent in cell:
