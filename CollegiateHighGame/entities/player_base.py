@@ -7,11 +7,9 @@ from pygame.math import Vector2
 from .entity import Entity
 from .player_base_turret import PlayerBaseTurret
 
-# from CollegiateHighGame.util.utils import distance
-
 
 class PlayerBase(pygame.sprite.Sprite, Entity):
-    def __init__(self, x, y, owner, game):
+    def __init__(self, x, y, owner, enemy, game):
         pygame.sprite.Sprite.__init__(self)
         Entity.__init__(self)
 
@@ -51,6 +49,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.game = game
 
         self.owner = owner
+        self.enemy = enemy
 
     def update(self, delta_time):
         # Drift
@@ -70,13 +69,19 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
             self.force.y = -abs(self.force.y)
 
         self.world_pos += self.force / 16 * delta_time
+        self.turret.world_pos = self.world_pos
 
         # Rotation
-        self.angle += self.rotation
+        self.angle += self.rotation / 16 * delta_time
         self.meteor_image = pygame.transform.rotate(self.orig_meteor_image, self.angle)
         self.rect = self.meteor_image.get_rect(center=self.rect.center)
 
         self.turret.set_foundation_angle(self.angle)
+
+        if self.world_pos.distance_to(self.enemy.world_pos) < 600:
+            self.turret.target(self.enemy.world_pos)
+
+        self.turret.update(delta_time)
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()

@@ -6,6 +6,7 @@ from CollegiateHighGame.states.state import State
 
 from CollegiateHighGame.entities.player import Player
 from CollegiateHighGame.entities.laser import Laser
+from CollegiateHighGame.entities.player_base import PlayerBase
 from CollegiateHighGame.entities.flag import Flag
 from CollegiateHighGame.entities.starfield import Starfield
 
@@ -81,6 +82,22 @@ class GameState(State):
             self.height / 2 - player_view2_dimensions.height / 2,
         )
 
+        self.base1 = PlayerBase(
+            player1_view_coords[0] + player_view1_dimensions.width / 2 - 200,
+            player1_view_coords[1] + player_view1_dimensions.height / 2,
+            self.player1,
+            self.player2,
+            self,
+        )
+
+        self.base2 = PlayerBase(
+            player2_view_coords[0] + player_view2_dimensions.width / 2 + 200,
+            player2_view_coords[1] + player_view2_dimensions.height / 2,
+            self.player2,
+            self.player1,
+            self,
+        )
+
         self.player1_view = PlayerView(
             surface=self.game.screen,
             dimensions=player_view1_dimensions,
@@ -106,21 +123,24 @@ class GameState(State):
         self.add_entity(self.player1)
         self.add_entity(self.player2)
 
-        self.flag1 = Flag(
-            self.player1_view.coords.center[0] - 200,
-            self.player1_view.coords.center[1],
-            "spaceBuilding_014",
-            self,
-        )
-        self.add_entity(self.flag1)
+        self.add_entity(self.base1)
+        self.add_entity(self.base2)
 
-        self.flag2 = Flag(
-            self.player2_view.coords.center[0] + 200,
-            self.player2_view.coords.center[1],
-            "spaceBuilding_015",
-            self,
-        )
-        self.add_entity(self.flag2)
+        # self.flag1 = Flag(
+        #     self.player1_view.coords.center[0] - 200,
+        #     self.player1_view.coords.center[1],
+        #     "spaceBuilding_014",
+        #     self,
+        # )
+        # self.add_entity(self.flag1)
+
+        # self.flag2 = Flag(
+        #     self.player2_view.coords.center[0] + 200,
+        #     self.player2_view.coords.center[1],
+        #     "spaceBuilding_015",
+        #     self,
+        # )
+        # self.add_entity(self.flag2)
 
         self.starfield = Starfield([self.player1_view, self.player2_view])
         self.starfield.prefill(10000, self.width, self.height)
@@ -136,7 +156,9 @@ class GameState(State):
 
             if isinstance(ent, Player):
                 for item in self.entities_map.query_point(ent.world_pos):
-                    if item is not ent and isinstance(item, Laser):
+                    if item is not ent and (
+                        isinstance(item, Laser)
+                    ):
                         ent.collide(item)
         # for key, cell in list(self.entities_map.grid.items()):
         # for ent in cell:
