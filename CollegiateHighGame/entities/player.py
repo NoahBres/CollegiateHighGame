@@ -1,5 +1,6 @@
 import os
 from math import cos, sin, atan2, radians, degrees
+from time import time
 
 import pygame
 from pygame.math import Vector2
@@ -111,7 +112,13 @@ class Player(pygame.sprite.Sprite, Entity):
             "shoot": None,
         }
 
+        self.shot_max = 8
+        self.shot_count = self.shot_max
+        self.last_recharge_time = 0
+        self.shot_recharge_time = 800  # milliseconds
+
     def update(self, delta_time):
+        # Movement
         self.velocity += self.acceleration
         limit_vec(self.velocity, self.max_speed)
 
@@ -169,6 +176,11 @@ class Player(pygame.sprite.Sprite, Entity):
             self.arrive_target(Vector2(self.target.centerx, self.target.centery))
             self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
 
+        # Shoot limiter
+        if self.shot_count < self.shot_max and time() * 1000 - self.last_recharge_time > self.shot_recharge_time:
+            self.shot_count += 1
+            self.last_recharge_time = time() * 1000
+
     def poll_events(self, events):
         keys = pygame.key.get_pressed()
 
@@ -225,7 +237,9 @@ class Player(pygame.sprite.Sprite, Entity):
 
             if self.target.center != self.rect.center:
                 target_size = 3
-                pygame.draw.circle(surface, (0, 255, 0), self.target.center, target_size)
+                pygame.draw.circle(
+                    surface, (0, 255, 0), self.target.center, target_size
+                )
 
     def apply_force(self, force):
         self.acceleration += force
@@ -303,6 +317,11 @@ class Player(pygame.sprite.Sprite, Entity):
         print(self.health)
 
     def shoot(self):
+        if self.shot_count <= 0:
+            return
+
+        self.shot_count -= 1
+
         Laser(
             self.world_pos.x,
             self.world_pos.y,
