@@ -80,6 +80,8 @@ class Player(pygame.sprite.Sprite, Entity):
 
         self.rect.center = (x, y)
 
+        self.draw_level = 0
+
         # To fix circular dependency between health and angle
         self.__health = 100
         self.__angle = 0
@@ -177,7 +179,10 @@ class Player(pygame.sprite.Sprite, Entity):
             self.angle = -degrees(atan2(self.velocity.y, self.velocity.x)) - 90
 
         # Shoot limiter
-        if self.shot_count < self.shot_max and time() * 1000 - self.last_recharge_time > self.shot_recharge_time:
+        if (
+            self.shot_count < self.shot_max
+            and time() * 1000 - self.last_recharge_time > self.shot_recharge_time
+        ):
             self.shot_count += 1
             self.last_recharge_time = time() * 1000
             self.view.shot_count_ui.set_count(self.shot_count)

@@ -132,21 +132,21 @@ class GameState(State):
         self.add_entity(self.base1)
         self.add_entity(self.base2)
 
-        # self.flag1 = Flag(
-        #     self.player1_view.coords.center[0] - 200,
-        #     self.player1_view.coords.center[1],
-        #     "spaceBuilding_014",
-        #     self,
-        # )
-        # self.add_entity(self.flag1)
+        self.flag1 = Flag(
+            self.base1.world_pos.x + self.base1.radius * 1.2,
+            self.base1.world_pos.y + self.base1.radius * 1.2,
+            "spaceBuilding_014",
+            self,
+        ).tether(self.base1)
+        self.add_entity(self.flag1)
 
-        # self.flag2 = Flag(
-        #     self.player2_view.coords.center[0] + 200,
-        #     self.player2_view.coords.center[1],
-        #     "spaceBuilding_015",
-        #     self,
-        # )
-        # self.add_entity(self.flag2)
+        self.flag2 = Flag(
+            self.base2.world_pos.x - self.base2.radius * 1.2,
+            self.base2.world_pos.y + self.base2.radius * 1.2,
+            "spaceBuilding_015",
+            self,
+        ).tether(self.base2)
+        self.add_entity(self.flag2)
 
         self.starfield = Starfield([self.player1_view, self.player2_view])
         self.starfield.prefill(10000, self.width, self.height)
