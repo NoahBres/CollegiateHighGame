@@ -53,8 +53,10 @@ class PlayerView:
         )
 
     def draw(self):
-        for key, entity in self.game.entities.items():
-            if key != self.player:
+        for entity in sorted(
+            list(self.game.entities.values()), key=lambda x: x.draw_level, reverse=True
+        ):
+            if entity != self.player:
                 offset_coords = Vector2(entity.world_pos) - Vector2(
                     self.coords.x, self.coords.y
                 )

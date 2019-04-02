@@ -12,6 +12,12 @@ class Entity:
 
         self.depose = False
 
+        # 0 is topmost
+        # Drawing importance goes down
+        # E.g 0 will be drawn above 1, 1 drawn above 2, etc.
+        # Player (topmost drawn) should probably be 0
+        self.draw_level = 0
+
     def __hash__(self):
         return self.hash
 
