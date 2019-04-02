@@ -4,6 +4,7 @@ import pygame
 from pygame.math import Vector2
 
 from .entity import Entity
+from .player_base import PlayerBase
 
 
 class Flag(pygame.sprite.Sprite, Entity):
@@ -27,8 +28,12 @@ class Flag(pygame.sprite.Sprite, Entity):
         self.world_pos = Vector2(x, y)
         self.angle = 0
 
+        self.tethered = None
+
         self.game = game
         self.game.add_entity(self)
+
+        self.draw_level = 1
 
     def update(self, delta_time):
         pass
@@ -39,3 +44,15 @@ class Flag(pygame.sprite.Sprite, Entity):
             rect.center = coords
 
         surface.blit(self.image, rect)
+
+    def tether(self, base):
+        self.tethered = base
+        base.tether(self)
+
+        return self
+
+    def untether(self, base):
+        self.tethered = None
+        base.untether(self)
+
+        return self

@@ -6,6 +6,7 @@ from pygame.math import Vector2
 
 from .entity import Entity
 from .player_base_turret import PlayerBaseTurret
+from .tether import Tether
 
 
 class PlayerBase(pygame.sprite.Sprite, Entity):
@@ -35,7 +36,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.orig_rect = self.meteor_image.get_rect()
         self.rect = self.meteor_image.get_rect()
 
-        self.radius = self.orig_rect.width
+        self.radius = self.orig_rect.width / 2 * 0.95
 
         self.world_pos = Vector2(x, y)
         self.angle = 0
@@ -50,6 +51,11 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
 
         self.owner = owner
         self.enemy = enemy
+
+        self.tethered = None
+        self.tether_obj = None
+
+        self.draw_level = 1
 
     def update(self, delta_time):
         # Drift
@@ -92,3 +98,17 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
 
         surface.blit(self.meteor_image, rect)
         self.turret.draw(surface, rect.center)
+        # pygame.draw.circle(surface, (255, 255, 255), rect.center, int(self.radius), 1)
+
+    def tether(self, flag):
+        self.tethered = flag
+        self.tether_obj = Tether(self, flag, self.game)
+
+        return self
+
+    def untether(self, flag):
+        self.tethered = None
+        self.game.remove_entity(self.tether_obj)
+        self.tether_obj = None
+
+        return self
