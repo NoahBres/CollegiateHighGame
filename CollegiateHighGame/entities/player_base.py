@@ -6,7 +6,6 @@ from pygame.math import Vector2
 
 from .entity import Entity
 from .player_base_turret import PlayerBaseTurret
-from .tether import Tether
 
 
 class PlayerBase(pygame.sprite.Sprite, Entity):
@@ -100,9 +99,9 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.turret.draw(surface, rect.center)
         # pygame.draw.circle(surface, (255, 255, 255), rect.center, int(self.radius), 1)
 
-    def tether(self, flag):
+    def tether(self, flag, tether_obj):
         self.tethered = flag
-        self.tether_obj = Tether(self, flag, self.game)
+        self.tether_obj = tether_obj
 
         return self
 

@@ -21,6 +21,11 @@ class Tether(pygame.sprite.Sprite, Entity):
 
         self.world_pos = point1.world_pos
 
+        self.color = (120, 120, 120)
+        self.width = 4
+
+        self.max_length = 200
+
         self.game = game
         self.game.add_entity(self)
 
@@ -39,4 +44,4 @@ class Tether(pygame.sprite.Sprite, Entity):
         if coords is not None:
             rect.bottomright = coords
 
-        pygame.draw.line(surface, (20, 20, 20), rect.topleft, rect.bottomright, 2)
+        pygame.draw.line(surface, self.color, rect.topleft, rect.bottomright, 4)
