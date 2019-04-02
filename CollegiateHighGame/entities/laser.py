@@ -39,6 +39,8 @@ class Laser(pygame.sprite.Sprite, Entity):
         self.translation_vector = Vector2(0, 1).rotate(180 - angle)
         self.translation_vector.scale_to_length(speed)
 
+        self.draw_level = 2
+
         self.source = source
 
     def update(self, delta_time):

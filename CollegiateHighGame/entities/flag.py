@@ -1,5 +1,5 @@
 import os
-from math import radians, degrees
+from math import radians
 from random import randint
 
 import pygame
@@ -42,7 +42,7 @@ class Flag(pygame.sprite.Sprite, Entity):
         self.game = game
         self.game.add_entity(self)
 
-        self.draw_level = 1
+        self.draw_level = 3
 
     def update(self, delta_time):
         if self.tethered is not None:

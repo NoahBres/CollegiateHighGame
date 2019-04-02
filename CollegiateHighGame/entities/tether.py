@@ -1,5 +1,4 @@
 import pygame
-from pygame.math import Vector2
 
 from .entity import Entity
 
@@ -29,7 +28,7 @@ class Tether(pygame.sprite.Sprite, Entity):
         self.game = game
         self.game.add_entity(self)
 
-        self.draw_level = 2
+        self.draw_level = 4
 
     def update(self, delta_time):
         self.rect = pygame.Rect(

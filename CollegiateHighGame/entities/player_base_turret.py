@@ -61,6 +61,8 @@ class PlayerBaseTurret(pygame.sprite.Sprite, Entity):
         self.time_btwn_shots = 100
         self.last_shot = 0
 
+        self.draw_level = 1
+
         self.base = base
         self.game = game
 

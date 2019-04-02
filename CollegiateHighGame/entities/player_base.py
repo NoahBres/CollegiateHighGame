@@ -41,6 +41,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.angle = 0
 
         self.turret = PlayerBaseTurret(x, y, self, game)
+        game.add_entity(self.turret)
 
         self.force = Vector2(randint(-10, 10) / 80, randint(-10, 10) / 80)
         # self.force = Vector2(-1, 0)
@@ -54,7 +55,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.tethered = None
         self.tether_obj = None
 
-        self.draw_level = 1
+        self.draw_level = 3
 
     def update(self, delta_time):
         # Drift
@@ -88,7 +89,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         else:
             self.turret.untarget()
 
-        self.turret.update(delta_time)
+        # self.turret.update(delta_time)
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()
@@ -96,7 +97,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
             rect.center = coords
 
         surface.blit(self.meteor_image, rect)
-        self.turret.draw(surface, rect.center)
+        # self.turret.draw(surface, rect.center)
         # pygame.draw.circle(surface, (255, 255, 255), rect.center, int(self.radius), 1)
 
     def tether(self, flag, tether_obj):
