@@ -61,6 +61,7 @@ class GameState(State):
             "left": locals.K_a,
             "right": locals.K_d,
             "shoot": locals.K_SPACE,
+            "speed": locals.K_c,
         }
 
         self.player2.key_mapping = {
@@ -69,6 +70,7 @@ class GameState(State):
             "left": locals.K_LEFT,
             "right": locals.K_RIGHT,
             "shoot": locals.K_RSHIFT,
+            "speed": locals.K_SLASH,
         }
 
         # World State

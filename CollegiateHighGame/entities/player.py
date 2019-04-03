@@ -91,7 +91,10 @@ class Player(pygame.sprite.Sprite, Entity):
 
         self.lives = 3
 
-        self.max_speed = 7
+        self.normal_speed = 7
+        self.super_speed = 14
+
+        self.max_speed = self.normal_speed
         self.max_steer = 0.2
         self.deceleration_rate = 0.97
 
@@ -112,6 +115,7 @@ class Player(pygame.sprite.Sprite, Entity):
             "left": None,
             "right": None,
             "shoot": None,
+            "speed": None
         }
 
         self.shot_max = 8
@@ -214,6 +218,11 @@ class Player(pygame.sprite.Sprite, Entity):
             self.target_angle = 180
         else:
             self.target_radius = 0
+
+        if keys[self.key_mapping["speed"]]:
+            self.max_speed = self.super_speed
+        else:
+            self.max_speed = self.normal_speed
 
         for event in events:
             if event.type == pygame.KEYDOWN:
