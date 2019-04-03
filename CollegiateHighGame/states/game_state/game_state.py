@@ -14,6 +14,7 @@ from CollegiateHighGame.util.hash_map import HashMap
 from .player_view import PlayerView
 from .player_health import PlayerHealth
 from .shot_count import ShotCount
+from .speed_ui import SpeedUI
 
 white = (255, 255, 255)
 
@@ -41,6 +42,13 @@ class GameState(State):
 
         player1_shot_count_ui = ShotCount((10, player_view1_dimensions.height - 40), 8)
         player2_shot_count_ui = ShotCount((10, player_view2_dimensions.height - 40), 8)
+
+        player1_speed_ui = SpeedUI(
+            (20, player_view1_dimensions.height - 90), (10, 15), 1
+        )
+        player2_speed_ui = SpeedUI(
+            (20, player_view2_dimensions.height - 90), (10, 15), 1
+        )
 
         self.player1 = Player(
             player_view1_dimensions.width / 2,
@@ -111,6 +119,7 @@ class GameState(State):
             player=self.player1,
             health_ui=player1_health_ui,
             shot_count_ui=player1_shot_count_ui,
+            speed_ui=player1_speed_ui,
             game=self,
             padding=(130, 130),
         )
@@ -121,6 +130,7 @@ class GameState(State):
             player=self.player2,
             health_ui=player2_health_ui,
             shot_count_ui=player2_shot_count_ui,
+            speed_ui=player2_speed_ui,
             game=self,
             padding=(130, 130),
         )
@@ -138,6 +148,8 @@ class GameState(State):
             self.base1.world_pos.x + self.base1.radius * 1.2,
             self.base1.world_pos.y + self.base1.radius * 1.2,
             "spaceBuilding_014",
+            self.player1,
+            self.player2,
             self,
         ).tether(self.base1)
         self.add_entity(self.flag1)
@@ -146,6 +158,8 @@ class GameState(State):
             self.base2.world_pos.x - self.base2.radius * 1.2,
             self.base2.world_pos.y + self.base2.radius * 1.2,
             "spaceBuilding_015",
+            self.player2,
+            self.player1,
             self,
         ).tether(self.base2)
         self.add_entity(self.flag2)

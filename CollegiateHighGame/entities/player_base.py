@@ -40,6 +40,8 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.world_pos = Vector2(x, y)
         self.angle = 0
 
+        self.targetting_radius = 800
+
         self.turret = PlayerBaseTurret(x, y, self, game)
         game.add_entity(self.turret)
 
@@ -84,7 +86,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
 
         self.turret.set_foundation_angle(self.angle)
 
-        if self.world_pos.distance_to(self.enemy.world_pos) < 600:
+        if self.world_pos.distance_to(self.enemy.world_pos) < self.targetting_radius:
             self.turret.target(self.enemy.world_pos)
         else:
             self.turret.untarget()

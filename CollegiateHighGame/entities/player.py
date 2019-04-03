@@ -91,8 +91,14 @@ class Player(pygame.sprite.Sprite, Entity):
 
         self.lives = 3
 
+        self.pressing_speed = False
+
         self.normal_speed = 7
-        self.super_speed = 14
+        self.super_speed = 18
+
+        self.speed_max_percent = 100
+        self.speed_percent = self.speed_max_percent
+        self.speed_refresh_rate = 1
 
         self.max_speed = self.normal_speed
         self.max_steer = 0.2
@@ -115,7 +121,7 @@ class Player(pygame.sprite.Sprite, Entity):
             "left": None,
             "right": None,
             "shoot": None,
-            "speed": None
+            "speed": None,
         }
 
         self.shot_max = 8
@@ -124,6 +130,18 @@ class Player(pygame.sprite.Sprite, Entity):
         self.shot_recharge_time = 800  # milliseconds
 
     def update(self, delta_time):
+        # Super speed
+        if self.pressing_speed and self.speed_percent > 0:
+            self.max_speed = self.super_speed
+            self.speed_percent -= 1
+        else:
+            self.max_speed = self.normal_speed
+
+            if self.speed_percent < 100:
+                self.speed_percent += 0.3
+
+        self.view.speed_ui.set_percent(self.speed_percent / 10)
+
         # Movement
         self.velocity += self.acceleration
         limit_vec(self.velocity, self.max_speed)
@@ -220,9 +238,9 @@ class Player(pygame.sprite.Sprite, Entity):
             self.target_radius = 0
 
         if keys[self.key_mapping["speed"]]:
-            self.max_speed = self.super_speed
+            self.pressing_speed = True
         else:
-            self.max_speed = self.normal_speed
+            self.pressing_speed = False
 
         for event in events:
             if event.type == pygame.KEYDOWN:
