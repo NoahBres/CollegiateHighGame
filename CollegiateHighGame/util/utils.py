@@ -12,10 +12,41 @@ def limit_vec(vec, max):
     vec.scale_to_length(max)
 
 
+def collide_aabb(point1, dimen1, point2, dimen2):
+    x1 = point1[0]
+    x2 = point2[0]
+
+    y1 = point1[1]
+    y2 = point2[1]
+
+    width1 = dimen1[0]
+    width2 = dimen2[0]
+
+    height1 = dimen1[1]
+    height2 = dimen2[1]
+
+    if (
+        x1 < x2 + width2
+        and x1 + width1 > x2
+        and y1 < y2 + height2
+        and y1 + height1 > y2
+    ):
+        return True
+
+    return False
+
+
 # https://gist.github.com/snorpey/8134c248296649433de2
 def collide_circle_rect(circle, rect):
-    rect_center = (rect["x"] + rect["width"] / 2, rect["y"] + rect["height"] / 2)
-    rect_reference = rect_center + tuple()
+    # rect_center = (rect["x"] + rect["width"] / 2, rect["y"] + rect["height"] / 2)
+    # rect_center = (rect["x"], rect["y"])
+    # rect_center = (rect["x"] - rect["width"] / 2, rect["y"] - rect["height"] / 2)
+    # rect_center = (rect["x"] + rect["width"], rect["y"])
+    # rect_reference = rect_center + tuple()
+    # rect_reference = rect_center + tuple()
+
+    rect_center = (rect["x"], rect["y"])
+    rect_reference = (rect["x"] - rect["width"] / 2, rect["y"] - rect["height"] / 2)
 
     unrotated_circle = (
         cos(rect["angle"]) * (circle["x"] - rect_center[0])
