@@ -1,5 +1,5 @@
 import os
-from math import radians
+from math import radians, degrees, atan2, cos, sin
 from random import randint
 
 import pygame
@@ -8,11 +8,14 @@ from pygame.math import Vector2
 from .entity import Entity
 from .tether import Tether
 
+# from .player import Player
+from .player_base import PlayerBase
+
 from CollegiateHighGame.util.utils import collide_circle_rect
 
 
 class Flag(pygame.sprite.Sprite, Entity):
-    def __init__(self, x, y, sprite_name, game):
+    def __init__(self, x, y, sprite_name, owner, enemy, game):
         pygame.sprite.Sprite.__init__(self)
         Entity.__init__(self)
 
@@ -39,6 +42,9 @@ class Flag(pygame.sprite.Sprite, Entity):
         self.tethered = None
         self.tether_obj = None
 
+        self.owner = owner
+        self.enemy = enemy
+
         self.game = game
         self.game.add_entity(self)
 
@@ -50,7 +56,18 @@ class Flag(pygame.sprite.Sprite, Entity):
                 self.world_pos.distance_to(self.tethered.world_pos)
             )
             if distance_to_tethered > self.tether_obj.max_length:
-                self.force = self.tethered.force
+                # self.force = self.tethered.force
+
+                difference = self.world_pos - self.enemy.world_pos
+                angle = radians(180) - atan2(difference.y, difference.x)
+
+                target_force = self.tethered.force.length()
+
+                print(degrees(angle))
+
+                self.force = Vector2(
+                    cos(angle) * target_force, sin(angle) * target_force
+                )
             elif (
                 distance_to_tethered < self.tethered.radius + self.orig_rect.width / 2
                 and collide_circle_rect(
@@ -64,7 +81,7 @@ class Flag(pygame.sprite.Sprite, Entity):
                         "y": self.world_pos.y,
                         "width": self.orig_rect.width,
                         "height": self.orig_rect.height,
-                        "angle": radians(self.angle),
+                        "angle": radians(180 - self.angle),
                     },
                 )
             ):
@@ -75,6 +92,23 @@ class Flag(pygame.sprite.Sprite, Entity):
                 #     - Vector2(0, 0).angle_to(self.world_pos)
                 # )
                 self.force = self.tethered.force * 1.2
+
+            if isinstance(self.tethered, PlayerBase) and collide_circle_rect(
+                {
+                    "x": self.enemy.world_pos.x,
+                    "y": self.enemy.world_pos.y,
+                    "radius": self.enemy.orig_rect.width / 2,
+                },
+                {
+                    "x": self.world_pos.x,
+                    "y": self.world_pos.y,
+                    "width": self.orig_rect.width,
+                    "height": self.orig_rect.height,
+                    "angle": radians(self.angle),
+                },
+            ):
+                self.untether(self.tethered)
+                self.tether(self.enemy)
 
         self.world_pos += self.force / 16 * delta_time
 
@@ -109,8 +143,12 @@ class Flag(pygame.sprite.Sprite, Entity):
         return self
 
     def untether(self, base):
+        # if self.tethered is None:
+        # if base is None:
+        #     return self
+
+        base.untether(self)
         self.tethered = None
         self.tether_obj = None
-        base.untether(self)
 
         return self

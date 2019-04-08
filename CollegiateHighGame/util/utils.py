@@ -38,13 +38,6 @@ def collide_aabb(point1, dimen1, point2, dimen2):
 
 # https://gist.github.com/snorpey/8134c248296649433de2
 def collide_circle_rect(circle, rect):
-    # rect_center = (rect["x"] + rect["width"] / 2, rect["y"] + rect["height"] / 2)
-    # rect_center = (rect["x"], rect["y"])
-    # rect_center = (rect["x"] - rect["width"] / 2, rect["y"] - rect["height"] / 2)
-    # rect_center = (rect["x"] + rect["width"], rect["y"])
-    # rect_reference = rect_center + tuple()
-    # rect_reference = rect_center + tuple()
-
     rect_center = (rect["x"], rect["y"])
     rect_reference = (rect["x"] - rect["width"] / 2, rect["y"] - rect["height"] / 2)
 

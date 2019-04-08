@@ -45,6 +45,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.turret = PlayerBaseTurret(x, y, self, game)
         game.add_entity(self.turret)
 
+        # self.force = Vector2(randint(-10, 10) / 80, randint(-10, 10) / 80)
         self.force = Vector2(randint(-10, 10) / 80, randint(-10, 10) / 80)
         # self.force = Vector2(-1, 0)
         self.rotation = randint(-10, 10) / 60
@@ -76,8 +77,13 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         elif self.world_pos.y + self.rect.height / 2 >= self.game.height:
             self.force.y = -abs(self.force.y)
 
+        last_pos = Vector2(self.world_pos)
+
         self.world_pos += self.force / 16 * delta_time
         self.turret.world_pos = self.world_pos
+
+        if last_pos != self.world_pos:
+            self.game.entities_map.update(self, last_pos, self.world_pos)
 
         # Rotation
         self.angle += self.rotation / 16 * delta_time

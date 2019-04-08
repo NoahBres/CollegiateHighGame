@@ -32,6 +32,7 @@ class HashMap:
         except Exception as e:
             print(e)
             print(cell)
+            # print(self.grid)
         if not cell:
             del self.grid[key]
         # del self.grid[key]
@@ -39,6 +40,7 @@ class HashMap:
     def update(self, obj, last_point, new_point):
         if last_point == new_point:
             return
+
         self.delete(obj, last_point)
         self.add(obj, new_point)
 

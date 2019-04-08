@@ -10,6 +10,7 @@ from .laser import Laser
 from CollegiateHighGame.util.utils import remap, limit_vec, collide_circle_rect
 
 DEBUG_TARGET = True
+DEBUG_SPEEDY = True
 
 
 class Player(pygame.sprite.Sprite, Entity):
@@ -110,6 +111,10 @@ class Player(pygame.sprite.Sprite, Entity):
         self.velocity = Vector2(0, 0)
         self.acceleration = Vector2(0, 0)
 
+        self.force = (
+            self.velocity
+        )  # provides a link to from force to velocity to keep compatability with flag's logic
+
         self.target = self.rect.copy()
         self.target_radius = 0
         self.target_max_radius = self.rect.width * 1.3
@@ -129,11 +134,17 @@ class Player(pygame.sprite.Sprite, Entity):
         self.last_recharge_time = 0
         self.shot_recharge_time = 800  # milliseconds
 
+        self.tethered = None
+        self.tether_obj = None
+
+        self.radius = self.orig_rect.width / 2
+
     def update(self, delta_time):
         # Super speed
         if self.pressing_speed and self.speed_percent > 0:
             self.max_speed = self.super_speed
-            self.speed_percent -= 1
+            if not DEBUG_SPEEDY:
+                self.speed_percent -= 1
         else:
             self.max_speed = self.normal_speed
 
@@ -404,3 +415,16 @@ class Player(pygame.sprite.Sprite, Entity):
         self.lives -= 1
         self.health = 100
         self.view.health_ui.set_lives(self.lives)
+
+    def tether(self, flag, tether_obj):
+        self.tethered = flag
+        self.tether_obj = tether_obj
+
+        return self
+
+    def untether(self, flag):
+        self.tethered = None
+        self.game.remove_entity(self.tether_obj)
+        self.tether_obj = None
+
+        return self
