@@ -59,14 +59,13 @@ class Flag(pygame.sprite.Sprite, Entity):
                 # self.force = self.tethered.force
 
                 difference = self.world_pos - self.enemy.world_pos
-                angle = radians(180) - atan2(difference.y, difference.x)
+                # angle = radians(180) - sin(difference.y / difference.x)
+                angle = atan2(difference.y, difference.x)
 
-                target_force = self.tethered.force.length()
-
-                print(degrees(angle))
+                target_force = self.tethered.force.length() * 1.5
 
                 self.force = Vector2(
-                    cos(angle) * target_force, sin(angle) * target_force
+                    -cos(angle) * target_force, -sin(angle) * target_force
                 )
             elif (
                 distance_to_tethered < self.tethered.radius + self.orig_rect.width / 2
@@ -91,7 +90,8 @@ class Flag(pygame.sprite.Sprite, Entity):
                 #     degrees(self.world_pos.angle_to(self.tethered.world_pos))
                 #     - Vector2(0, 0).angle_to(self.world_pos)
                 # )
-                self.force = self.tethered.force * 1.2
+                # self.force = self.tethered.force * 1.2
+                pass
 
             if isinstance(self.tethered, PlayerBase) and collide_circle_rect(
                 {
