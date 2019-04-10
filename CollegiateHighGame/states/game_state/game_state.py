@@ -150,6 +150,7 @@ class GameState(State):
             "spaceBuilding_014",
             self.player1,
             self.player2,
+            self.base1,
             self,
         ).tether(self.base1)
         self.add_entity(self.flag1)
@@ -160,6 +161,7 @@ class GameState(State):
             "spaceBuilding_015",
             self.player2,
             self.player1,
+            self.base2,
             self,
         ).tether(self.base2)
         self.add_entity(self.flag2)

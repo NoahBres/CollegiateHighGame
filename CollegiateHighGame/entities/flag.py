@@ -1,8 +1,9 @@
 import os
-from math import radians, degrees, atan2, cos, sin
+from math import radians, atan2, cos, sin
 from random import randint
 
 import pygame
+import pygame.gfxdraw
 from pygame.math import Vector2
 
 from .entity import Entity
@@ -15,7 +16,7 @@ from CollegiateHighGame.util.utils import collide_circle_rect
 
 
 class Flag(pygame.sprite.Sprite, Entity):
-    def __init__(self, x, y, sprite_name, owner, enemy, game):
+    def __init__(self, x, y, sprite_name, owner, enemy, base, game):
         pygame.sprite.Sprite.__init__(self)
         Entity.__init__(self)
 
@@ -45,6 +46,14 @@ class Flag(pygame.sprite.Sprite, Entity):
         self.owner = owner
         self.enemy = enemy
 
+        self.tether_wait_progress = 0
+        self.tether_wait_speed = (
+            0.3 / 16
+        )  # to account for delta_time being about 16.666 (ideally)
+        self.respawn_distance = 200
+
+        self.base = base
+
         self.game = game
         self.game.add_entity(self)
 
@@ -67,7 +76,7 @@ class Flag(pygame.sprite.Sprite, Entity):
                 self.force = Vector2(
                     -cos(angle) * target_force, -sin(angle) * target_force
                 )
-            elif (
+            elif isinstance(self.tethered, PlayerBase) and (
                 distance_to_tethered < self.tethered.radius + self.orig_rect.width / 2
                 and collide_circle_rect(
                     {
@@ -90,8 +99,8 @@ class Flag(pygame.sprite.Sprite, Entity):
                 #     degrees(self.world_pos.angle_to(self.tethered.world_pos))
                 #     - Vector2(0, 0).angle_to(self.world_pos)
                 # )
-                # self.force = self.tethered.force * 1.2
-                pass
+                self.force = self.tethered.force * 1.2
+                # pass
 
             if isinstance(self.tethered, PlayerBase) and collide_circle_rect(
                 {
@@ -109,6 +118,31 @@ class Flag(pygame.sprite.Sprite, Entity):
             ):
                 self.untether(self.tethered)
                 self.tether(self.enemy)
+
+            if self.tethered is self.enemy and collide_circle_rect(
+                {
+                    "x": self.owner.world_pos.x,
+                    "y": self.owner.world_pos.y,
+                    "radius": self.owner.orig_rect.width / 2,
+                },
+                {
+                    "x": self.world_pos.x,
+                    "y": self.world_pos.y,
+                    "width": self.orig_rect.width,
+                    "height": self.orig_rect.height,
+                    "angle": radians(self.angle),
+                },
+            ):
+                self.untether(self.tethered)
+        elif self.world_pos.distance_to(self.owner.world_pos) < self.respawn_distance:
+            if self.tether_wait_progress >= 100:
+                self.world_pos.x = self.base.world_pos.x + self.base.radius * 1.2
+                self.world_pos.y = self.base.world_pos.y + self.base.radius * 1.2
+                self.tether_wait_progress = 0
+
+                self.tether(self.base)
+
+            self.tether_wait_progress += self.tether_wait_speed * delta_time
 
         self.world_pos += self.force / 16 * delta_time
 
@@ -132,6 +166,54 @@ class Flag(pygame.sprite.Sprite, Entity):
             rect.center = coords
 
         surface.blit(self.image, rect)
+
+        if self.tether_wait_progress > 0:
+            wait_rect_scale = 1.6
+            wait_rect = pygame.Rect(
+                0,
+                0,
+                self.orig_rect.width * wait_rect_scale,
+                self.orig_rect.width * wait_rect_scale,
+            )
+            wait_rect.center = rect.center
+
+            pygame.gfxdraw.arc(
+                surface,
+                wait_rect.center[0],
+                wait_rect.center[1],
+                int(wait_rect.width / 2),
+                0,
+                int(360 * self.tether_wait_progress / 100),
+                (255, 205, 255),
+            )
+
+            pygame.gfxdraw.arc(
+                surface,
+                wait_rect.center[0],
+                wait_rect.center[1],
+                int(wait_rect.width / 2) - 1,
+                0,
+                int(360 * self.tether_wait_progress / 100),
+                (255, 205, 150),
+            )
+
+            pygame.gfxdraw.arc(
+                surface,
+                wait_rect.center[0],
+                wait_rect.center[1],
+                int(wait_rect.width / 2) - 2,
+                0,
+                int(360 * self.tether_wait_progress / 100),
+                (255, 205, 50),
+            )
+            # pygame.draw.arc(
+            #     surface,
+            #     (255, 255, 255),
+            #     wait_rect,
+            #     0,
+            #     (2 * 3.141_592_65) * self.tether_wait_progress / 100,
+            #     3,
+            # )
 
     def tether(self, base):
         self.tethered = base
