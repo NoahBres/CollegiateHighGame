@@ -94,6 +94,7 @@ class Player(pygame.sprite.Sprite, Entity):
 
         self.pressing_speed = False
 
+        self.tethered_speed = 4
         self.normal_speed = 7
         self.super_speed = 18
 
@@ -420,11 +421,15 @@ class Player(pygame.sprite.Sprite, Entity):
         self.tethered = flag
         self.tether_obj = tether_obj
 
+        self.max_speed = self.tethered_speed
+
         return self
 
     def untether(self, flag):
         self.tethered = None
         self.game.remove_entity(self.tether_obj)
         self.tether_obj = None
+
+        self.max_speed = self.normal_speed
 
         return self

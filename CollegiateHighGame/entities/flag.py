@@ -60,10 +60,10 @@ class Flag(pygame.sprite.Sprite, Entity):
         self.draw_level = 3
 
     def update(self, delta_time):
+        # This whole section should probably be contained in the game_state update logic
+        # rather than the entity logic
         if self.tethered is not None:
-            distance_to_tethered = abs(
-                self.world_pos.distance_to(self.tethered.world_pos)
-            )
+            distance_to_tethered = self.world_pos.distance_to(self.tethered.world_pos)
             if distance_to_tethered > self.tether_obj.max_length:
                 # self.force = self.tethered.force
 
@@ -134,6 +134,22 @@ class Flag(pygame.sprite.Sprite, Entity):
                 },
             ):
                 self.untether(self.tethered)
+        elif collide_circle_rect(
+            {
+                "x": self.enemy.world_pos.x,
+                "y": self.enemy.world_pos.y,
+                "radius": self.enemy.orig_rect.width / 2,
+            },
+            {
+                "x": self.world_pos.x,
+                "y": self.world_pos.y,
+                "width": self.orig_rect.width,
+                "height": self.orig_rect.height,
+                "angle": radians(self.angle),
+            },
+        ):
+            self.tether_wait_progress = 0
+            self.tether(self.enemy)
         elif self.world_pos.distance_to(self.owner.world_pos) < self.respawn_distance:
             if self.tether_wait_progress >= 100:
                 self.world_pos.x = self.base.world_pos.x + self.base.radius * 1.2
@@ -232,5 +248,7 @@ class Flag(pygame.sprite.Sprite, Entity):
         base.untether(self)
         self.tethered = None
         self.tether_obj = None
+
+        self.force = Vector2(0, 0)
 
         return self
