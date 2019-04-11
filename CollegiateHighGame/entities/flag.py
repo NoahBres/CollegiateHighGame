@@ -7,6 +7,7 @@ import pygame.gfxdraw
 from pygame.math import Vector2
 
 from .entity import Entity
+from .player import Player
 from .tether import Tether
 
 # from .player import Player
@@ -64,60 +65,64 @@ class Flag(pygame.sprite.Sprite, Entity):
         # rather than the entity logic
         if self.tethered is not None:
             distance_to_tethered = self.world_pos.distance_to(self.tethered.world_pos)
-            if distance_to_tethered > self.tether_obj.max_length:
-                # self.force = self.tethered.force
 
-                difference = self.world_pos - self.enemy.world_pos
-                # angle = radians(180) - sin(difference.y / difference.x)
-                angle = atan2(difference.y, difference.x)
+            if isinstance(self.tethered, Player):
+                if distance_to_tethered > self.tether_obj.max_length:
+                    # self.force = self.tethered.force
 
-                target_force = self.tethered.force.length() * 1.5
+                    difference = self.world_pos - self.enemy.world_pos
+                    # angle = radians(180) - sin(difference.y / difference.x)
+                    angle = atan2(difference.y, difference.x)
 
-                self.force = Vector2(
-                    -cos(angle) * target_force, -sin(angle) * target_force
-                )
-            elif isinstance(self.tethered, PlayerBase) and (
-                distance_to_tethered < self.tethered.radius + self.orig_rect.width / 2
-                and collide_circle_rect(
+                    target_force = self.tethered.force.length() * 1.5
+
+                    self.force = Vector2(
+                        -cos(angle) * target_force, -sin(angle) * target_force
+                    )
+            elif isinstance(self.tethered, PlayerBase):
+                if (
+                    distance_to_tethered
+                    < self.tethered.radius + self.orig_rect.width / 2
+                    and collide_circle_rect(
+                        {
+                            "x": self.tethered.world_pos.x,
+                            "y": self.tethered.world_pos.y,
+                            "radius": self.tethered.radius * 2,
+                        },
+                        {
+                            "x": self.world_pos.x,
+                            "y": self.world_pos.y,
+                            "width": self.orig_rect.width,
+                            "height": self.orig_rect.height,
+                            "angle": radians(180 - self.angle),
+                        },
+                    )
+                ):
+                    # print(f"----{self.hash}----")
+                    # print(degrees(self.world_pos.angle_to(self.tethered.world_pos)))
+                    # self.force.rotate(
+                    #     degrees(self.world_pos.angle_to(self.tethered.world_pos))
+                    #     - Vector2(0, 0).angle_to(self.world_pos)
+                    # )
+                    self.force = self.tethered.force * 1.2
+                    # pass
+
+                if collide_circle_rect(
                     {
-                        "x": self.tethered.world_pos.x,
-                        "y": self.tethered.world_pos.y,
-                        "radius": self.tethered.radius * 2,
+                        "x": self.enemy.world_pos.x,
+                        "y": self.enemy.world_pos.y,
+                        "radius": self.enemy.orig_rect.width / 2,
                     },
                     {
                         "x": self.world_pos.x,
                         "y": self.world_pos.y,
                         "width": self.orig_rect.width,
                         "height": self.orig_rect.height,
-                        "angle": radians(180 - self.angle),
+                        "angle": radians(self.angle),
                     },
-                )
-            ):
-                # print(f"----{self.hash}----")
-                # print(degrees(self.world_pos.angle_to(self.tethered.world_pos)))
-                # self.force.rotate(
-                #     degrees(self.world_pos.angle_to(self.tethered.world_pos))
-                #     - Vector2(0, 0).angle_to(self.world_pos)
-                # )
-                self.force = self.tethered.force * 1.2
-                # pass
-
-            if isinstance(self.tethered, PlayerBase) and collide_circle_rect(
-                {
-                    "x": self.enemy.world_pos.x,
-                    "y": self.enemy.world_pos.y,
-                    "radius": self.enemy.orig_rect.width / 2,
-                },
-                {
-                    "x": self.world_pos.x,
-                    "y": self.world_pos.y,
-                    "width": self.orig_rect.width,
-                    "height": self.orig_rect.height,
-                    "angle": radians(self.angle),
-                },
-            ):
-                self.untether(self.tethered)
-                self.tether(self.enemy)
+                ):
+                    self.untether(self.tethered)
+                    self.tether(self.enemy)
 
             if self.tethered is self.enemy and collide_circle_rect(
                 {
@@ -152,11 +157,7 @@ class Flag(pygame.sprite.Sprite, Entity):
             self.tether(self.enemy)
         elif self.world_pos.distance_to(self.owner.world_pos) < self.respawn_distance:
             if self.tether_wait_progress >= 100:
-                self.world_pos.x = self.base.world_pos.x + self.base.radius * 1.2
-                self.world_pos.y = self.base.world_pos.y + self.base.radius * 1.2
-                self.tether_wait_progress = 0
-
-                self.tether(self.base)
+                self.base_respawn()
 
             self.tether_wait_progress += self.tether_wait_speed * delta_time
 
@@ -252,3 +253,13 @@ class Flag(pygame.sprite.Sprite, Entity):
         self.force = Vector2(0, 0)
 
         return self
+
+    def base_respawn(self):
+        if self.tethered is not None:
+            self.untether(self.tethered)
+
+        self.world_pos.x = self.base.world_pos.x + self.base.radius * 1.2
+        self.world_pos.y = self.base.world_pos.y + self.base.radius * 1.2
+        self.tether_wait_progress = 0
+
+        self.tether(self.base)

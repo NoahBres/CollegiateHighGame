@@ -417,6 +417,8 @@ class Player(pygame.sprite.Sprite, Entity):
         self.health = 100
         self.view.health_ui.set_lives(self.lives)
 
+        # self.
+
     def tether(self, flag, tether_obj):
         self.tethered = flag
         self.tether_obj = tether_obj

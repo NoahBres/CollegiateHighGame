@@ -92,12 +92,20 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
 
         self.turret.set_foundation_angle(self.angle)
 
+        # Targetting
         if self.world_pos.distance_to(self.enemy.world_pos) < self.targetting_radius:
             self.turret.target(self.enemy.world_pos)
         else:
             self.turret.untarget()
 
         # self.turret.update(delta_time)
+
+        # Flag capture
+        if (
+            self.owner.tethered is not None
+            and self.world_pos.distance_to(self.owner.world_pos) < self.radius
+        ):
+            self.owner.tethered.base_respawn()
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()
