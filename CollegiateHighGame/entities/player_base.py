@@ -106,6 +106,7 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
             and self.world_pos.distance_to(self.owner.world_pos) < self.radius
         ):
             self.owner.tethered.base_respawn()
+            self.game.flag_capture(self.owner)
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()

@@ -169,6 +169,9 @@ class GameState(State):
         self.starfield = Starfield([self.player1_view, self.player2_view])
         self.starfield.prefill(10000, self.width, self.height)
 
+        self.player1_flags = 0
+        self.player2_flags = 0
+
     def poll_events(self, events):
         self.player1.poll_events(events)
         self.player2.poll_events(events)
@@ -221,7 +224,18 @@ class GameState(State):
     def player_death(self, player):
         player.respawn()
 
+        # if player is self.player1:
+        #     print("player 1 died")
+        # elif player is self.player2:
+        #     print("player 2 died")
+
+    def flag_capture(self, player):
         if player is self.player1:
-            print("player 1 died")
+            self.player1_flags += 1
         elif player is self.player2:
-            print("player 2 died")
+            self.player2_flags += 1
+
+        if self.player1_flags == 3:
+            print("player 1 wins")
+        elif self.player2_flags == 3:
+            print("player 2 wins")

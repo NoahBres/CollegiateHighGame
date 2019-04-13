@@ -417,6 +417,30 @@ class Player(pygame.sprite.Sprite, Entity):
         self.health = 100
         self.view.health_ui.set_lives(self.lives)
 
+        # if self.tethered is not None:
+        #     print(self.tethered)
+        #     self.untether(self.tethered)
+
+        last_pos = Vector2(self.world_pos)
+
+        # Super hacky and terrible but I don't want spend time restructuring to make this correct
+        if self is self.game.player1:
+            self.world_pos.x = (
+                self.game.base1.world_pos.x + self.game.base1.radius * 1.2
+            )
+            self.world_pos.y = (
+                self.game.base1.world_pos.y + self.game.base1.radius * 1.2
+            )
+        elif self is self.game.player2:
+            self.world_pos.x = (
+                self.game.base1.world_pos.x + self.game.base2.radius * 1.2
+            )
+            self.world_pos.y = (
+                self.game.base1.world_pos.y + self.game.base2.radius * 1.2
+            )
+
+        self.game.entities_map.update(self, last_pos, self.world_pos)
+
         # self.
 
     def tether(self, flag, tether_obj):
