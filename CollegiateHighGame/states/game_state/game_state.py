@@ -16,6 +16,8 @@ from .player_health import PlayerHealth
 from .shot_count import ShotCount
 from .speed_ui import SpeedUI
 
+from .capture_ui import CaptureUI
+
 white = (255, 255, 255)
 
 
@@ -48,6 +50,13 @@ class GameState(State):
         )
         player2_speed_ui = SpeedUI(
             (20, player_view2_dimensions.height - 90), (10, 15), 1
+        )
+
+        player1_capture_ui = CaptureUI(
+            (20, player_view1_dimensions.height - 75), "spaceBuilding_015", 0
+        )
+        player2_capture_ui = CaptureUI(
+            (20, player_view2_dimensions.height - 75), "spaceBuilding_014", 0
         )
 
         self.player1 = Player(
@@ -120,6 +129,7 @@ class GameState(State):
             health_ui=player1_health_ui,
             shot_count_ui=player1_shot_count_ui,
             speed_ui=player1_speed_ui,
+            capture_ui=player1_capture_ui,
             game=self,
             padding=(130, 130),
         )
@@ -131,6 +141,7 @@ class GameState(State):
             health_ui=player2_health_ui,
             shot_count_ui=player2_shot_count_ui,
             speed_ui=player2_speed_ui,
+            capture_ui=player2_capture_ui,
             game=self,
             padding=(130, 130),
         )

@@ -58,6 +58,8 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         self.tethered = None
         self.tether_obj = None
 
+        self.captures = 0
+
         self.draw_level = 3
 
     def update(self, delta_time):
@@ -107,6 +109,9 @@ class PlayerBase(pygame.sprite.Sprite, Entity):
         ):
             self.owner.tethered.base_respawn()
             self.game.flag_capture(self.owner)
+
+            self.captures += 1
+            self.owner.view.capture_ui.set_captures(self.captures)
 
     def draw(self, surface, coords=None):
         rect = self.rect.copy()

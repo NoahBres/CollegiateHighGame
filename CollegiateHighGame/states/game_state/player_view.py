@@ -16,6 +16,7 @@ class PlayerView:
         health_ui,
         shot_count_ui,
         speed_ui,
+        capture_ui,
         game,
         padding,
     ):
@@ -43,6 +44,7 @@ class PlayerView:
         self.health_ui = health_ui
         self.shot_count_ui = shot_count_ui
         self.speed_ui = speed_ui
+        self.capture_ui = capture_ui
 
         mini_map_dimen = (150, 150)
         mini_map_padding = (10, 10)
@@ -82,6 +84,7 @@ class PlayerView:
         self.health_ui.draw(self.surface)
         self.shot_count_ui.draw(self.surface)
         self.speed_ui.draw(self.surface)
+        self.capture_ui.draw(self.surface)
 
         if DEBUG_PADDING_LINE:
             line_points = [
