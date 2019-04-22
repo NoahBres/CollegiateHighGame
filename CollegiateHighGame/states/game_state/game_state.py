@@ -70,7 +70,7 @@ class GameState(State):
             player_view2_dimensions.width / 2,
             player_view2_dimensions.height / 2,
             "playerShip1_blue",
-            self.game.player1_joystick,
+            self.game.player2_joystick,
             self,
         )
 
