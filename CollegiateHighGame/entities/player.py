@@ -14,7 +14,7 @@ DEBUG_SPEEDY = True
 
 
 class Player(pygame.sprite.Sprite, Entity):
-    def __init__(self, x, y, sprite_name, game):
+    def __init__(self, x, y, sprite_name, gamepad_id, game):
         # super().__init__()
         pygame.sprite.Sprite.__init__(self)
         Entity.__init__(self)
@@ -121,6 +121,8 @@ class Player(pygame.sprite.Sprite, Entity):
         self.target_max_radius = self.rect.width * 1.3
         self.target_angle = -90
 
+        self.gamepad_id = gamepad_id
+
         self.key_mapping = {
             "up": None,
             "down": None,
@@ -128,7 +130,19 @@ class Player(pygame.sprite.Sprite, Entity):
             "right": None,
             "shoot": None,
             "speed": None,
+            "pad-x": 0,
+            "pad-a": 1,
+            "pad-b": 2,
+            "pad-y": 3,
+            "pad-up-down": 1,
+            "pad-left-right": 0,
         }
+
+        self.throttle_keys = {
+            'pad-a': False
+        }
+
+        self.axis_threshold = 0.5
 
         self.shot_max = 8
         self.shot_count = self.shot_max
@@ -224,26 +238,71 @@ class Player(pygame.sprite.Sprite, Entity):
     def poll_events(self, events):
         keys = pygame.key.get_pressed()
 
-        if keys[self.key_mapping["up"]]:
+        joystick = None
+        if self.gamepad_id is not None:
+            joystick = pygame.joystick.Joystick(self.gamepad_id)
+            joystick.init()
+
+        gamepad_buttons = (
+            [0] * joystick.get_numbuttons() if joystick is not None else [0] * 4
+        )
+        gamepad_axes = [0] * joystick.get_numaxes() if joystick is not None else [0] * 4
+        if joystick is not None:
+            for i in range(joystick.get_numbuttons()):
+                # button = joystick.get_button(i)
+                gamepad_buttons[i] = joystick.get_button(i)
+
+            for i in range(joystick.get_numaxes()):
+                gamepad_axes[i] = joystick.get_axis(i)
+
+        if (
+            keys[self.key_mapping["up"]]
+            or gamepad_axes[self.key_mapping["pad-up-down"]] < -self.axis_threshold
+        ):
             self.target_radius = 1
-            if keys[self.key_mapping["right"]]:
+            if (
+                keys[self.key_mapping["right"]]
+                or gamepad_axes[self.key_mapping["pad-left-right"]]
+                > self.axis_threshold
+            ):
                 self.target_angle = 315
-            elif keys[self.key_mapping["left"]]:
+            elif (
+                keys[self.key_mapping["left"]]
+                or gamepad_axes[self.key_mapping["pad-left-right"]]
+                < -self.axis_threshold
+            ):
                 self.target_angle = 225
             else:
                 self.target_angle = 270
-        elif keys[self.key_mapping["down"]]:
+        elif (
+            keys[self.key_mapping["down"]]
+            or gamepad_axes[self.key_mapping["pad-up-down"]] > self.axis_threshold
+        ):
             self.target_radius = 1
-            if keys[self.key_mapping["right"]]:
+            if (
+                keys[self.key_mapping["right"]]
+                or gamepad_axes[self.key_mapping["pad-left-right"]]
+                > self.axis_threshold
+            ):
                 self.target_angle = 45
-            elif keys[self.key_mapping["left"]]:
+            elif (
+                keys[self.key_mapping["left"]]
+                or gamepad_axes[self.key_mapping["pad-left-right"]]
+                < -self.axis_threshold
+            ):
                 self.target_angle = 135
             else:
                 self.target_angle = 90
-        elif keys[self.key_mapping["right"]]:
+        elif (
+            keys[self.key_mapping["right"]]
+            or gamepad_axes[self.key_mapping["pad-left-right"]] > self.axis_threshold
+        ):
             self.target_radius = 1
             self.target_angle = 0
-        elif keys[self.key_mapping["left"]]:
+        elif (
+            keys[self.key_mapping["left"]]
+            or gamepad_axes[self.key_mapping["pad-left-right"]] < -self.axis_threshold
+        ):
             self.target_radius = 1
             self.target_angle = 180
         else:
@@ -253,6 +312,9 @@ class Player(pygame.sprite.Sprite, Entity):
             self.pressing_speed = True
         else:
             self.pressing_speed = False
+
+        if gamepad_buttons[self.key_mapping["pad-a"]]:
+            self.shoot()
 
         for event in events:
             if event.type == pygame.KEYDOWN:

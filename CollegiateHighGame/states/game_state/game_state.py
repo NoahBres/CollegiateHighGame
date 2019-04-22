@@ -63,32 +63,30 @@ class GameState(State):
             player_view1_dimensions.width / 2,
             player_view1_dimensions.height / 2,
             "playerShip1_red",
+            self.game.player1_joystick,
             self,
         )
         self.player2 = Player(
             player_view2_dimensions.width / 2,
             player_view2_dimensions.height / 2,
             "playerShip1_blue",
+            self.game.player1_joystick,
             self,
         )
 
-        self.player1.key_mapping = {
-            "up": locals.K_w,
-            "down": locals.K_s,
-            "left": locals.K_a,
-            "right": locals.K_d,
-            "shoot": locals.K_SPACE,
-            "speed": locals.K_c,
-        }
+        self.player1.key_mapping["up"] = locals.K_w
+        self.player1.key_mapping["down"] = locals.K_s
+        self.player1.key_mapping["left"] = locals.K_a
+        self.player1.key_mapping["right"] = locals.K_d
+        self.player1.key_mapping["shoot"] = locals.K_SPACE
+        self.player1.key_mapping["speed"] = locals.K_c
 
-        self.player2.key_mapping = {
-            "up": locals.K_UP,
-            "down": locals.K_DOWN,
-            "left": locals.K_LEFT,
-            "right": locals.K_RIGHT,
-            "shoot": locals.K_RSHIFT,
-            "speed": locals.K_SLASH,
-        }
+        self.player2.key_mapping["up"] = locals.K_UP
+        self.player2.key_mapping["down"] = locals.K_DOWN
+        self.player2.key_mapping["left"] = locals.K_LEFT
+        self.player2.key_mapping["right"] = locals.K_RIGHT
+        self.player2.key_mapping["shoot"] = locals.K_RSHIFT
+        self.player2.key_mapping["speed"] = locals.K_SLASH
 
         # World State
         self.width = 6000
