@@ -136,10 +136,13 @@ class Player(pygame.sprite.Sprite, Entity):
             "pad-y": 3,
             "pad-up-down": 1,
             "pad-left-right": 0,
+            "pad-l": 4,
+            "pad-r": 5
         }
 
         self.throttle_keys = {
-            'pad-a': False
+            'pad-a': False,
+            'pad-r': False
         }
 
         self.axis_threshold = 0.5
@@ -244,7 +247,7 @@ class Player(pygame.sprite.Sprite, Entity):
             joystick.init()
 
         gamepad_buttons = (
-            [0] * joystick.get_numbuttons() if joystick is not None else [0] * 4
+            [0] * joystick.get_numbuttons() if joystick is not None else [0] * 9
         )
         gamepad_axes = [0] * joystick.get_numaxes() if joystick is not None else [0] * 4
         if joystick is not None:
@@ -308,13 +311,17 @@ class Player(pygame.sprite.Sprite, Entity):
         else:
             self.target_radius = 0
 
-        if keys[self.key_mapping["speed"]]:
+        if keys[self.key_mapping["speed"]] or gamepad_buttons[self.key_mapping['pad-y']]:
             self.pressing_speed = True
         else:
             self.pressing_speed = False
 
-        if gamepad_buttons[self.key_mapping["pad-a"]]:
-            self.shoot()
+        if gamepad_buttons[self.key_mapping["pad-r"]]:
+            if self.throttle_keys['pad-r'] is False:
+                self.shoot()
+                self.throttle_keys['pad-r'] = True
+        else:
+            self.throttle_keys['pad-r'] = False
 
         for event in events:
             if event.type == pygame.KEYDOWN:
