@@ -9,7 +9,7 @@ from .text_obj import TextObject
 # from .button import Button
 
 # Joystick button reference:
-# x = 0, a = 1, b = 2, y = 3
+# x = 0, a = 1, b = 2, y = 3, L = 4, R = 5, select = 8, start = 9
 
 WHITE = (255, 255, 255)
 
@@ -107,3 +107,6 @@ class IntroState(State):
                         self.player2_joystick = i
                         if self.player1_joystick == i:
                             self.player1_joystick = None
+
+                    if j == 9:
+                        self.emit("start-pressed")
