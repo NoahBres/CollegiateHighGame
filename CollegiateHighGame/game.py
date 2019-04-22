@@ -26,7 +26,6 @@ class Game:
         # self.height = height
         # self.center_width = width / 2
         # self.center_height = height / 2
-
         self.clock = pygame.time.Clock()
 
         self.dt = 1000 / TARGET_FPS
@@ -65,7 +64,7 @@ class Game:
         self.current_state.on("start-pressed", self.next_state)
 
         # Skip intro
-        self.next_state()
+        # self.next_state()
 
         self.is_running = True
 
@@ -133,4 +132,6 @@ class Game:
 
     def next_state(self):
         if isinstance(self.current_state, IntroState):
+            self.player1_joystick = self.current_state.player1_joystick
+            self.player2_joystick = self.current_state.player2_joystick
             self.current_state = GameState(self)

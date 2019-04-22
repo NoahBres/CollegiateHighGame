@@ -8,6 +8,9 @@ from .text_obj import TextObject
 
 # from .button import Button
 
+# Joystick button reference:
+# x = 0, a = 1, b = 2, y = 3
+
 WHITE = (255, 255, 255)
 
 
@@ -15,6 +18,9 @@ class IntroState(State):
     def __init__(self, *args, **kwargs):
         # State.__init__(self)
         super().__init__(*args, **kwargs)
+
+        self.player1_joystick = None
+        self.player2_joystick = None
 
         self.title = TextObject(
             "Test Title",
@@ -41,7 +47,7 @@ class IntroState(State):
         )
 
         self.player1_joystick_text = TextObject(
-            "Player 1 Joystick:",
+            "Player 1 Joystick (press A):",
             20,
             10,
             self.game.height - 70,
@@ -50,7 +56,7 @@ class IntroState(State):
         )
 
         self.player2_joystick_text = TextObject(
-            "Player 2 Joystick:",
+            "Player 2 Joystick (press B):",
             20,
             10,
             self.game.height - 40,
@@ -64,6 +70,11 @@ class IntroState(State):
         self.press_enter_to_start.color = (
             WHITE if (seconds * 1.5) % 2 > 1 else (0, 0, 0)
         )
+
+        string1 = "selected" if (self.player1_joystick is not None) else ""
+        string2 = "selected" if (self.player2_joystick is not None) else ""
+        self.player1_joystick_text.text = f"Player 1 Joystick (press A): {string1}"
+        self.player2_joystick_text.text = f"Player 2 Joystick (press B): {string2}"
 
     def draw(self, screen):
         screen.fill((0, 0, 0))
@@ -79,8 +90,20 @@ class IntroState(State):
             if event.type == locals.KEYUP:
                 self.emit("start-pressed")
 
-            if event.type == pygame.JOYBUTTONDOWN:
-                pass
-            if event.type == pygame.JOYBUTTONUP:
-                pass
+        for i in range(self.game.joystick_count):
+            joystick = pygame.joystick.Joystick(i)
+            joystick.init()
 
+            buttons = joystick.get_numbuttons()
+            for j in range(buttons):
+                button = joystick.get_button(j)
+
+                if button == 1:
+                    if j == 1:
+                        self.player1_joystick = i
+                        if self.player2_joystick == i:
+                            self.player2_joystick = None
+                    if j == 2:
+                        self.player2_joystick = i
+                        if self.player1_joystick == i:
+                            self.player1_joystick = None
