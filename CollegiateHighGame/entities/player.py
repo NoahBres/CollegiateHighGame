@@ -9,7 +9,7 @@ from .entity import Entity
 from .laser import Laser
 from CollegiateHighGame.util.utils import remap, limit_vec, collide_circle_rect
 
-DEBUG_TARGET = True
+DEBUG_TARGET = False
 DEBUG_SPEEDY = True
 
 
@@ -120,6 +120,7 @@ class Player(pygame.sprite.Sprite, Entity):
         self.target_radius = 0
         self.target_max_radius = self.rect.width * 1.3
         self.target_angle = -90
+        self.target_angle_speed = 4
 
         self.gamepad_id = gamepad_id
 
@@ -137,13 +138,10 @@ class Player(pygame.sprite.Sprite, Entity):
             "pad-up-down": 1,
             "pad-left-right": 0,
             "pad-l": 4,
-            "pad-r": 5
+            "pad-r": 5,
         }
 
-        self.throttle_keys = {
-            'pad-a': False,
-            'pad-r': False
-        }
+        self.throttle_keys = {"pad-a": False, "pad-r": False}
 
         self.axis_threshold = 0.5
 
@@ -263,65 +261,183 @@ class Player(pygame.sprite.Sprite, Entity):
             or gamepad_axes[self.key_mapping["pad-up-down"]] < -self.axis_threshold
         ):
             self.target_radius = 1
-            if (
-                keys[self.key_mapping["right"]]
-                or gamepad_axes[self.key_mapping["pad-left-right"]]
-                > self.axis_threshold
+
+            # if (
+            #     keys[self.key_mapping["right"]]
+            #     or gamepad_axes[self.key_mapping["pad-left-right"]] > self.axis_threshold
+            # ):
+            #     if (
+            #         self.target_angle <= 315 + self.target_angle_speed
+            #         and self.target_angle >= 315 - self.target_angle_speed):
+            #         self.target_angle = 315
+            #     elif self.target_angle <= 135 or self.target_angle >= 315:
+            #         self.target_angle -= self.target_angle_speed
+            #     else:
+            #         self.target_angle += self.target_angle_speed
+            # else:
+
+            if not (
+                self.target_angle >= 270
+                and (
+                    keys[self.key_mapping["right"]]
+                    or gamepad_axes[self.key_mapping["pad-left-right"]]
+                    > self.axis_threshold
+                )
+            ) and not (
+                self.target_angle >= 180
+                and self.target_angle < 270
+                and (
+                    keys[self.key_mapping["left"]]
+                    or gamepad_axes[self.key_mapping["pad-left-right"]]
+                    < -self.axis_threshold
+                )
             ):
-                self.target_angle = 315
-            elif (
-                keys[self.key_mapping["left"]]
-                or gamepad_axes[self.key_mapping["pad-left-right"]]
-                < -self.axis_threshold
-            ):
-                self.target_angle = 225
-            else:
-                self.target_angle = 270
-        elif (
-            keys[self.key_mapping["down"]]
-            or gamepad_axes[self.key_mapping["pad-up-down"]] > self.axis_threshold
-        ):
-            self.target_radius = 1
-            if (
-                keys[self.key_mapping["right"]]
-                or gamepad_axes[self.key_mapping["pad-left-right"]]
-                > self.axis_threshold
-            ):
-                self.target_angle = 45
-            elif (
-                keys[self.key_mapping["left"]]
-                or gamepad_axes[self.key_mapping["pad-left-right"]]
-                < -self.axis_threshold
-            ):
-                self.target_angle = 135
-            else:
-                self.target_angle = 90
+                if (
+                    self.target_angle <= 270 + self.target_angle_speed
+                    and self.target_angle >= 270 - self.target_angle_speed
+                ):
+                    self.target_angle = 270
+                elif self.target_angle <= 90 or self.target_angle >= 270:
+                    self.target_angle -= self.target_angle_speed
+                else:
+                    self.target_angle += self.target_angle_speed
         elif (
             keys[self.key_mapping["right"]]
             or gamepad_axes[self.key_mapping["pad-left-right"]] > self.axis_threshold
         ):
             self.target_radius = 1
-            self.target_angle = 0
+
+            if not (
+                self.target_angle >= 0
+                and self.target_angle < 90
+                and (
+                    keys[self.key_mapping["down"]]
+                    or gamepad_axes[self.key_mapping["pad-up-down"]]
+                    > self.axis_threshold
+                )
+            ):
+                if self.target_angle <= 0 + self.target_angle_speed:
+                    self.target_angle = 0
+                elif self.target_angle >= 360 - self.target_angle_speed:
+                    self.target_angle = 0
+                elif self.target_angle >= 180:
+                    self.target_angle += self.target_angle_speed
+                else:
+                    self.target_angle -= self.target_angle_speed
+        elif (
+            keys[self.key_mapping["down"]]
+            or gamepad_axes[self.key_mapping["pad-up-down"]] > self.axis_threshold
+        ):
+            self.target_radius = 1
+
+            if not (
+                self.target_angle >= 90
+                and self.target_angle < 180
+                and (
+                    keys[self.key_mapping["left"]]
+                    or gamepad_axes[self.key_mapping["pad-left-right"]]
+                    < -self.axis_threshold
+                )
+            ):
+                if (
+                    self.target_angle >= 90 - self.target_angle_speed
+                    and self.target_angle <= 90 + self.target_angle_speed
+                ):
+                    self.target_angle = 90
+                elif self.target_angle <= 270 and self.target_angle > 90:
+                    self.target_angle -= self.target_angle_speed
+                else:
+                    self.target_angle += self.target_angle_speed
         elif (
             keys[self.key_mapping["left"]]
             or gamepad_axes[self.key_mapping["pad-left-right"]] < -self.axis_threshold
         ):
             self.target_radius = 1
-            self.target_angle = 180
+            if (
+                self.target_angle >= 180 - self.target_angle_speed
+                and self.target_angle <= 180 + self.target_angle_speed
+            ):
+                self.target_angle = 180
+            elif self.target_angle >= 0 and self.target_angle < 180:
+                self.target_angle += self.target_angle_speed
+            else:
+                self.target_angle -= self.target_angle_speed
         else:
             self.target_radius = 0
+            # self.target_angle = self.angle
 
-        if keys[self.key_mapping["speed"]] or gamepad_buttons[self.key_mapping['pad-y']]:
+        if self.target_angle >= 360:
+            self.target_angle = self.target_angle % 360
+        elif self.target_angle < 0:
+            self.target_angle += 360
+
+        # if (
+        #     keys[self.key_mapping["up"]]
+        #     or gamepad_axes[self.key_mapping["pad-up-down"]] < -self.axis_threshold
+        # ):
+        #     self.target_radius = 1
+        #     if (
+        #         keys[self.key_mapping["right"]]
+        #         or gamepad_axes[self.key_mapping["pad-left-right"]]
+        #         > self.axis_threshold
+        #     ):
+        #         self.target_angle = 315
+        #     elif (
+        #         keys[self.key_mapping["left"]]
+        #         or gamepad_axes[self.key_mapping["pad-left-right"]]
+        #         < -self.axis_threshold
+        #     ):
+        #         self.target_angle = 225
+        #     else:
+        #         self.target_angle = 270
+        # elif (
+        #     keys[self.key_mapping["down"]]
+        #     or gamepad_axes[self.key_mapping["pad-up-down"]] > self.axis_threshold
+        # ):
+        #     self.target_radius = 1
+        #     if (
+        #         keys[self.key_mapping["right"]]
+        #         or gamepad_axes[self.key_mapping["pad-left-right"]]
+        #         > self.axis_threshold
+        #     ):
+        #         self.target_angle = 45
+        #     elif (
+        #         keys[self.key_mapping["left"]]
+        #         or gamepad_axes[self.key_mapping["pad-left-right"]]
+        #         < -self.axis_threshold
+        #     ):
+        #         self.target_angle = 135
+        #     else:
+        #         self.target_angle = 90
+        # elif (
+        #     keys[self.key_mapping["right"]]
+        #     or gamepad_axes[self.key_mapping["pad-left-right"]] > self.axis_threshold
+        # ):
+        #     self.target_radius = 1
+        #     self.target_angle = 0
+        # elif (
+        #     keys[self.key_mapping["left"]]
+        #     or gamepad_axes[self.key_mapping["pad-left-right"]] < -self.axis_threshold
+        # ):
+        #     self.target_radius = 1
+        #     self.target_angle = 180
+        # else:
+        #     self.target_radius = 0
+
+        if (
+            keys[self.key_mapping["speed"]]
+            or gamepad_buttons[self.key_mapping["pad-y"]]
+        ):
             self.pressing_speed = True
         else:
             self.pressing_speed = False
 
         if gamepad_buttons[self.key_mapping["pad-r"]]:
-            if self.throttle_keys['pad-r'] is False:
+            if self.throttle_keys["pad-r"] is False:
                 self.shoot()
-                self.throttle_keys['pad-r'] = True
+                self.throttle_keys["pad-r"] = True
         else:
-            self.throttle_keys['pad-r'] = False
+            self.throttle_keys["pad-r"] = False
 
         for event in events:
             if event.type == pygame.KEYDOWN:
