@@ -1,6 +1,9 @@
 import pygame
 from pygame import locals, Vector2
 
+from random import randint
+from time import time
+
 # from .state import State
 from CollegiateHighGame.states.state import State
 
@@ -9,6 +12,7 @@ from CollegiateHighGame.entities.laser import Laser
 from CollegiateHighGame.entities.player_base import PlayerBase
 from CollegiateHighGame.entities.flag import Flag
 from CollegiateHighGame.entities.starfield import Starfield
+from CollegiateHighGame.entities.health_pill import HealthPill
 
 from CollegiateHighGame.util.hash_map import HashMap
 from .player_view import PlayerView
@@ -181,6 +185,15 @@ class GameState(State):
         self.player1_flags = 0
         self.player2_flags = 0
 
+        self.healthpill_last_spawn = 0
+        self.healthpill_min_spawn_time = 10
+        self.healthpill_spawn_time = randint(0, 10)
+
+        # Spawn a bunch of health pills
+        for i in range(randint(20, 30)):
+            pill = HealthPill(randint(0, self.width), randint(0, self.height), self)
+            self.add_entity(pill)
+
     def poll_events(self, events):
         self.player1.poll_events(events)
         self.player2.poll_events(events)
@@ -192,14 +205,20 @@ class GameState(State):
 
             if isinstance(ent, Player):
                 for item in self.entities_map.query_point(ent.world_pos):
-                    if item is not ent and (isinstance(item, Laser)):
+                    if item is not ent and (
+                        (isinstance(item, Laser)) or isinstance(item, HealthPill)
+                    ):
                         ent.collide(item)
-        # for key, cell in list(self.entities_map.grid.items()):
-        # for ent in cell:
-        # ent.update(delta_time)
 
-        # self.player1.update()
-        # self.player2.update()
+        if (
+            time() - self.healthpill_last_spawn
+            > self.healthpill_min_spawn_time + self.healthpill_spawn_time
+        ):
+            pill = HealthPill(randint(0, self.width), randint(0, self.height), self)
+            self.add_entity(pill)
+            self.healthpill_last_spawn = time()
+            self.healthpill_spawn_time = randint(0, 10)
+            print("spawn")
 
         self.starfield.update(delta_time)
 
