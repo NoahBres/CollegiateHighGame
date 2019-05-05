@@ -12,4 +12,5 @@
 ## 🤷 What is it?
 
 **Quick tl;dr:**
+
 Collegiate High School's Tech Club hosted a game development competition (2019). The game was to be made in Python using the Pygame library. This is my project for the competition.
