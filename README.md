@@ -59,7 +59,11 @@ Congrats! The required packages are installed.
 
 ## 🐍 Run
 
-From the root folder, run `python -m CollegiateHighGame`
+From the root folder, run:
+
+```
+$ python -m CollegiateHighGame
+```
 
 ### Optional: VSCode Debug
 
