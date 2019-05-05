@@ -31,7 +31,7 @@ There are a few options to download and run the project.
 
 Click the green download button near the top right and unzip the file.
 
-![](CollegiateHighGame/assets/readme/download-1.gif)
+![Download from GitHub gif](CollegiateHighGame/assets/readme/download-1.gif)
 
 ### Option 2: Git clone
 
@@ -40,3 +40,28 @@ Recommended for most developers. Simply run:
 ```
 $ git clone https://github.com/NoahBres/CollegiateHighGame.git
 ```
+
+## 📦 Install Packages
+
+If you're using pip:
+
+```
+$ pip install -r requirements.txt
+```
+
+If you're using pipenv
+
+```
+$ pipenv install
+```
+
+Congrats! The required packages are installed.
+
+## 🐍 Run
+
+From the root folder, run `python -m CollegiateHighGame`
+
+### Optional: VSCode Debug
+
+This git repo comes with a `launch.json` for VSCode users. This enables you to launc the program by simply pressing the green play button on VSCode's debug menu. Ignore if you aren't using Visual Studio Code. Otherwise, it's pretty snazzy.
+![Debug button gif](CollegiateHighGame/assets/readme/debug.gif)
