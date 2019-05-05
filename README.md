@@ -29,6 +29,9 @@ There are a few options to download and run the project.
 
 ### Option 1: Download from Github
 
-Click the green download button near the top right and unzip the file.
+<details>
+<summary>Click the green download button near the top right and unzip the file.</summary>
 
 ![](CollegiateHighGame/assets/readme/download-1.gif)
+
+</details>
