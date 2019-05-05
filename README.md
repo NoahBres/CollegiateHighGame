@@ -29,9 +29,14 @@ There are a few options to download and run the project.
 
 ### Option 1: Download from Github
 
-<details>
-<summary>Click the green download button near the top right and unzip the file.</summary>
+Click the green download button near the top right and unzip the file.
 
 ![](CollegiateHighGame/assets/readme/download-1.gif)
 
-</details>
+### Option 2: Git clone
+
+Recommended for most developers. Simply run:
+
+```
+$ git clone https://github.com/NoahBres/CollegiateHighGame.git
+```
