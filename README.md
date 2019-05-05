@@ -19,6 +19,8 @@ Collegiate High School's Tech Club hosted a game development competition (2019).
 
 This game is essentially just a simple capture the flag game. The window is split in half, each player getting their own half. Each player has their own base with a "flag" (satellite) tethered to it. The goal is to capture the opponent's satellite and bring it to your own base.
 
+_Cool feature:_ The game has joystick support. Currently optimized for SNES joysticks. Check the demo below.
+
 ## 🎮 Demo
 
 > Test
